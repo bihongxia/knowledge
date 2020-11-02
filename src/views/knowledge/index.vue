@@ -1,6 +1,6 @@
 <template>
   <el-container >
-    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+    <el-aside width="210px;">
       <el-input v-model="search" placeholder="搜索" prefix-icon="el-icon-search"></el-input>
       <el-menu>
         <template slot="">
@@ -82,6 +82,7 @@
   }
   .el-aside {
     color: #333;
+    background-color: rgb(238, 241, 246);
     padding: 5px 10px;
   }
   .el-input{

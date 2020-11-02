@@ -1,6 +1,6 @@
 <template>
   <el-container >
-    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+    <el-aside width="210px">
       <el-input v-model="search" placeholder="搜索" prefix-icon="el-icon-search"></el-input>
       <el-menu>
         <template slot="">
@@ -16,12 +16,59 @@
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header style="height: 110px;">
-        <div class="h-title">
-          我的文件
-        </div>
+      <el-header>
+        <div class="h-title">新增文档</div>
       </el-header>
       <el-main>
+        <el-form ref="form" :model="sizeForm" label-width="80px">
+          <el-form-item label="主题">
+            <el-input v-model="sizeForm.name"></el-input>
+          </el-form-item>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="创建者">
+                <el-input v-model="sizeForm.name"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="选择时间">
+                <el-date-picker type="date" placeholder="选择时间" v-model="sizeForm.date1" style="width: 100%;"></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="作者">
+                <el-input v-model="sizeForm.name"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="部门">
+                <el-select v-model="sizeForm.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="shanghai"></el-option>
+                  <el-option label="区域二" value="beijing"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="文档分类">
+                <el-select v-model="sizeForm.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="shanghai"></el-option>
+                  <el-option label="区域二" value="beijing"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item label="内容简要">
+            <el-text v-model="sizeForm.name"></el-text>
+          </el-form-item>
+          <el-form-item size="large">
+            <el-button type="primary" @click="onSubmit">立即创建</el-button>
+            <el-button>取消</el-button>
+          </el-form-item>
+        </el-form>
       </el-main>
     </el-container>
   </el-container>
@@ -33,6 +80,7 @@
   }
   .el-aside {
     color: #333;
+    background-color: rgb(238, 241, 246);
     padding: 5px 10px;
   }
   .el-input{
@@ -85,7 +133,17 @@
       ];
       return {
         tableData: tableData,
-        search: ''
+        search: '',
+        sizeForm: {
+          name: '',
+            region: '',
+            date1: '',
+            date2: '',
+            delivery: false,
+            type: [],
+            resource: '',
+            desc: ''
+        }
       }
     },
     methods:{
