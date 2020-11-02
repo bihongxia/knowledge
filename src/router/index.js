@@ -46,11 +46,11 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/knowledge',
     children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
+      path: 'knowledge',
+      name: 'Knowledge',
+      component: () => import('@/views/knowledge/index'),
       meta: { title: '知识库', icon: 'dashboard' }
     }]
   },
@@ -58,11 +58,11 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/words',
+    redirect: '/hotword',
     children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
+      path: 'hotword',
+      name: 'Hotword',
+      component: () => import('@/views/hotword/index'),
       meta: { title: '热词统计', icon: 'el-icon-s-data' }
     }]
   },
@@ -70,44 +70,44 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/log',
+    redirect: '/logs',
     children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
+      path: 'logs',
+      name: 'Logs',
+      component: () => import('@/views/logs/index'),
       meta: { title: '操作日志', icon: 'el-icon-document-copy' }
     }]
   },
 
   {
-    path: '/example',
+    path: '/setting',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
+    redirect: '/setting/department',
+    name: 'Setting',
     meta: { title: '系统设置', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
+        path: 'department',
+        name: 'Department',
+        component: () => import('@/views/setting/department'),
         meta: { title: '部门管理', icon: 'el-icon-document-copy' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
+        path: 'user',
+        name: 'User',
+        component: () => import('@/views/setting/user'),
         meta: { title: '用户管理', icon: 'el-icon-s-custom' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
+        path: 'role',
+        name: 'Role',
+        component: () => import('@/views/setting/role'),
         meta: { title: '角色管理', icon: 'tree' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
+        path: 'power',
+        name: 'Power',
+        component: () => import('@/views/setting/power'),
         meta: { title: '权限管理', icon: 'tree' }
       }
     ]
