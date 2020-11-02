@@ -47,12 +47,20 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/knowledge',
-    children: [{
-      path: 'knowledge',
-      name: 'Knowledge',
-      component: () => import('@/views/knowledge/index'),
-      meta: { title: '知识库', icon: 'dashboard' }
-    }]
+    children: [
+      {
+        path: 'knowledge',
+        name: 'Knowledge',
+        component: () => import('@/views/knowledge/index'),
+        meta: { title: '知识库', icon: 'dashboard' }
+      },
+      {
+        path: 'knowledge/create',
+        name: 'createDocument',
+        component: () => import('@/views/knowledge/create'),
+        meta: { title: '知识库', icon: 'dashboard' }
+      }
+    ]
   },
 
   {
