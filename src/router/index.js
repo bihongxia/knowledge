@@ -64,11 +64,11 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
+    path: '/hotword',
     component: Layout,
-    redirect: '/hotword',
+    redirect: '/index',
     children: [{
-      path: 'hotword',
+      path: 'index',
       name: 'Hotword',
       component: () => import('@/views/hotword/index'),
       meta: { title: '热词统计', icon: 'el-icon-s-data' }
@@ -76,11 +76,11 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
+    path: '/logs',
     component: Layout,
-    redirect: '/logs',
+    redirect: '/index',
     children: [{
-      path: 'logs',
+      path: 'index',
       name: 'Logs',
       component: () => import('@/views/logs/index'),
       meta: { title: '操作日志', icon: 'el-icon-document-copy' }
@@ -126,7 +126,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
