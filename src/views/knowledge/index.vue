@@ -87,7 +87,6 @@
       ];
       return {
         tableData: tableData,
-        test:0,
       }
     },
     methods:{
