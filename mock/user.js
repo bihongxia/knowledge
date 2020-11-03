@@ -1,4 +1,4 @@
-
+const Mock = require('mockjs')
 const tokens = {
   admin: {
     token: 'admin-token'
@@ -22,6 +22,20 @@ const users = {
     name: 'Normal Editor'
   }
 }
+
+const list = Mock.mock({
+  'items|10': [{
+    id: '@id',
+    title: '@sentence(10, 20)',
+    'status|2': ['禁用', '启用'],
+    name: '@name',
+    nickname: 'nickname',
+    email: '@email',
+    displayName: '@cname',
+    createdAt: '@datetime',
+    lastLoginAt: '@datetime'
+  }]
+})
 
 module.exports = [
   // user login
@@ -78,6 +92,20 @@ module.exports = [
       return {
         code: 20000,
         data: 'success'
+      }
+    }
+  },
+  {
+    url: '/admin/user/list',
+    type: 'post',
+    response: _ => {
+      const items = list.items
+      return {
+        code: 20000,
+        data: {
+          total: items.length * 10,
+          data: items
+        }
       }
     }
   }
