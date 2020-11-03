@@ -1,5 +1,41 @@
 <template>
   <div class="app-container">
+      <el-card class="box-card">
+      <div class="text">
+        <el-form
+          :inline="true"
+          :model="formInline"
+          class="demo-form-inline"
+          size="mini"
+        >
+          <el-form-item label="用户名">
+            <el-input
+              v-model="formInline.user"
+              placeholder="用户名"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              @click="onSearch"
+            >查询</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              @click="addUser"
+            >添加用户</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              @click="getList"
+            >刷新列表</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card class="box-card">    
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -40,11 +76,13 @@
         </template>
       </el-table-column>
     </el-table>
+    </el-card>
   </div>
 </template>
 
 <script>
 import { getList } from '@/api/table'
+import { Message } from 'element-ui'
 
 export default {
   filters: {
@@ -60,7 +98,10 @@ export default {
   data() {
     return {
       list: null,
-      listLoading: true
+      listLoading: true,
+      formInline: {
+        user: ''
+      }
     }
   },
   created() {
@@ -73,7 +114,35 @@ export default {
         this.list = response.data.items
         this.listLoading = false
       })
+    },
+    onSearch() {
+      console.log(this.dialogFormVisible)
+    },
+    addUser() {
+      this.dialogFormVisible = true
+      this.editRow = null
+    },
+    // 编辑角色
+    edit(row) {
+      this.dialogFormVisible = true
+      this.editRow = row
+    },
+    delete(row) {
+      console.log(row)
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+.el-form-item {
+  margin: 0;
+  padding: 0;
+}
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #c0f0a7 !important;
+}
+</style>
