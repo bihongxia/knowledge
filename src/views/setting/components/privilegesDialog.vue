@@ -76,6 +76,7 @@ export default {
       this.loading = true
       privileges({ role: this.editRow.id })
         .then(response => {
+          console.log(response)
           this.loading = false
           this.data = response.data.list
           this.checkedData = response.data.checked

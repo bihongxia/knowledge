@@ -255,7 +255,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .el-form-item {
-  margin: 0;
+  margin: 3;
   padding: 0;
 }
 .el-table .warning-row {
