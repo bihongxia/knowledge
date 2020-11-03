@@ -62,8 +62,73 @@
             </el-col>
           </el-row>
           <el-form-item label="内容简要">
-            <el-text v-model="sizeForm.name"></el-text>
+            <el-input type="textarea" v-model="sizeForm.content"></el-input>
+            <div>
+              <tinymce v-model="sizeForm.content" :height="300" />
+            </div>
           </el-form-item>
+          <el-form-item label="文档附件">
+            <el-upload
+              class="upload-demo"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              multiple
+              :limit="3"
+              :on-exceed="handleExceed"
+              :file-list="sizeForm.fileList">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标题图片">
+            <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
+            <my-upload field="img" @crop-success="cropSuccess" v-model="sizeForm.show" :width="400" :height="200" img-format="jpg" :size="size"></my-upload>
+            <img :src="avatar">
+          </el-form-item>
+          <el-form-item label="权限设置">
+            <el-button type="primary" plain @click="authDialog = true">权限</el-button>
+          </el-form-item>
+
+          <el-dialog
+            title="提示"
+            :visible.sync="authDialog"
+            width="30%"
+            :before-close="handleClose">
+            <el-form-item label="访问权限">
+              <el-radio v-model="sizeForm.radio3" label="1" border size="medium">共享</el-radio>
+              <el-radio v-model="sizeForm.radio3" label="2" border size="medium">私密</el-radio>
+
+              <div>
+                <el-select
+                  v-show="sizeForm.radio3 == '2'"
+                  v-model="value"
+                  multiple
+                  filterable
+                  remote
+                  reserve-keyword
+                  placeholder="请输入允许访问的人员名字"
+                  :remote-method="remoteMethod"
+                  :loading="loading">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </div>
+            </el-form-item>
+            <el-form-item label="读写权限">
+              <el-radio v-model="sizeForm.radio4" label="1" border size="medium">浏览</el-radio>
+              <el-radio v-model="sizeForm.radio4" label="2" border size="medium">下载</el-radio>
+            </el-form-item>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="authDialog = false">取 消</el-button>
+              <el-button type="primary" @click="authDialog = false">确 定</el-button>
+            </span>
+          </el-dialog>
           <el-form-item size="large">
             <el-button type="primary" @click="onSubmit">立即创建</el-button>
             <el-button>取消</el-button>
@@ -106,12 +171,19 @@
   .light-color{
     color: #acacac;
   }
+  #image{
+    padding-top: 200px;
+  }
+
 </style>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import Tinymce from '@/components/Tinymce';
+  import 'babel-polyfill'
+  import myUpload from 'vue-image-crop-upload'
 
   export default {
+    components: { Tinymce, myUpload },
     data() {
       const tableData = [
         {
@@ -136,14 +208,44 @@
         search: '',
         sizeForm: {
           name: '',
-            region: '',
-            date1: '',
-            date2: '',
-            delivery: false,
-            type: [],
-            resource: '',
-            desc: ''
-        }
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: '',
+          content:'',
+          avatar: "",  //用于存储剪切完图片的base64Data和显示回调图片
+          show: false,  //剪切框显示和隐藏的flag
+          size: 2.1,
+          fileList: [],
+          radio3: '1',
+          radio4: '1',
+          selectAuth: [],
+        },
+        authDialog: false,
+        options: [],
+        value: [],
+        list: [],
+        loading: false,
+        states: ["Alabama", "Alaska", "Arizona",
+          "Arkansas", "California", "Colorado",
+          "Connecticut", "Delaware", "Florida",
+          "Georgia", "Hawaii", "Idaho", "Illinois",
+          "Indiana", "Iowa", "Kansas", "Kentucky",
+          "Louisiana", "Maine", "Maryland",
+          "Massachusetts", "Michigan", "Minnesota",
+          "Mississippi", "Missouri", "Montana",
+          "Nebraska", "Nevada", "New Hampshire",
+          "New Jersey", "New Mexico", "New York",
+          "North Carolina", "North Dakota", "Ohio",
+          "Oklahoma", "Oregon", "Pennsylvania",
+          "Rhode Island", "South Carolina",
+          "South Dakota", "Tennessee", "Texas",
+          "Utah", "Vermont", "Virginia",
+          "Washington", "West Virginia", "Wisconsin",
+          "Wyoming"]
       }
     },
     methods:{
@@ -165,7 +267,56 @@
       },
       createDoc(){
 
+      },
+      //控制剪切框的显示和隐藏
+      toggleShow() {
+        this.sizeForm.show = !this.sizeForm.show;
+      },
+      //剪切成功后的回调函数
+      cropSuccess(imgDataUrl) {
+        //  imgDataUrl其实就是图片的base64data码
+        this.avatar = imgDataUrl;
+        console.log(imgDataUrl)//这里打印出来的是base64格式的资源
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      },
+      handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
+      remoteMethod(query) {
+        if (query !== '') {
+          this.loading = true;
+          setTimeout(() => {
+            this.loading = false;
+            this.options = this.list.filter(item => {
+              return item.label.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1;
+            });
+          }, 200);
+        } else {
+          this.options = [];
+        }
       }
-    }
+    },
+    mounted() {
+      this.list = this.states.map(item => {
+        return { value: `value:${item}`, label: `label:${item}` };
+      });
+    },
+
   };
 </script>
