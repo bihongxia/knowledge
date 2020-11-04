@@ -1,6 +1,6 @@
 <template>
   <el-container >
-    <knowledge-bar></knowledge-bar>
+    <knowledge-bar @getList="getList"></knowledge-bar>
     <el-container>
       <el-header style="height: 110px;">
         <div class="h-title">
@@ -34,11 +34,15 @@
         <el-table :data="tableData" v-loading="loading">
           <el-table-column label="名称" width="140">
             <template slot-scope="scope">
-              <div  style="cursor: pointer" @click="findDoc">
+              <div  style="cursor: pointer" @click="getList(scope.row.id)" v-if="scope.row.file_type=='file_folder'">
                 <i class="el-icon-folder" v-show="scope.row.file_type=='file_folder'" ></i>
+                <span style="margin-left: 10px;">{{ scope.row.file_name }}</span>
+              </div>
+              <div  style="cursor: pointer" @click="findDoc(scope.row.id)" v-else="scope.row.file_type=='file'">
                 <i class="el-icon-document" v-show="scope.row.file_type=='file'"></i>
                 <span style="margin-left: 10px;">{{ scope.row.file_name }}</span>
               </div>
+
             </template>
           </el-table-column>
           <el-table-column label="状态" width="120">
@@ -54,6 +58,10 @@
             </template>
           </el-table-column>
           <el-table-column prop="user" label="更新者">
+          </el-table-column>
+          <el-table-column prop="user" label="作者">
+          </el-table-column>
+          <el-table-column prop="user" label="复核人">
           </el-table-column>
           <el-table-column prop="file_size" label="大小">
           </el-table-column>
@@ -113,6 +121,9 @@
       }
     },
     methods:{
+      getList(id) {
+        this.fetchData(id);
+      },
       goBack(){
 
       },
