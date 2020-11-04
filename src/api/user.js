@@ -8,6 +8,14 @@ export function login(data) {
   })
 }
 
+export function wxLogin(data) {
+  return request({
+    url: '/auth/login',
+    method: 'post',
+    data
+  })
+}
+
 export function getInfo(token) {
   return request({
     url: '/vue-admin-template/user/info',

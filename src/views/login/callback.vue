@@ -2,6 +2,7 @@
   <div>正在登录</div>
 </template>
 <script>
+import { wxLogin } from '@/api/user'
 export default {
   data() {
     return {
@@ -12,7 +13,7 @@ export default {
     }
   },
   created() {
-    this.getInfo()
+    this.wxLogin()
   },
   methods: {
     getInfo() {
@@ -23,6 +24,12 @@ export default {
         this.loading = false
       }).catch(() => {
         this.loading = false
+      })
+    },
+    wxLogin() {
+      console.log(this.$route.query)
+      wxLogin({ userCode: this.$route.query }).then(response => {
+        console.log(response)
       })
     }
   }
