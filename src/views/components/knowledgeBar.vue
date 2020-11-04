@@ -11,13 +11,13 @@
     ></el-autocomplete>
     <el-menu>
       <template slot="">
-        <el-menu-item @click="getList(-1)"><i class="el-icon-time"></i>最近浏览</el-menu-item>
         <el-menu-item @click="getList(0)"><i class="el-icon-user"></i>我的文件</el-menu-item>
+        <el-menu-item @click="getList(-1)"><i class="el-icon-time"></i>最近浏览</el-menu-item>
       </template>
       <el-submenu index="">
         <template slot="title">文档分类</template>
         <template>
-          <el-menu-item index=""><i class="el-icon-s-opportunity"></i>选项1</el-menu-item>
+          <el-menu-item v-for="cate in cateList" @click="getList(cate.id)"><i class="el-icon-s-opportunity"></i>{{cate.name}}</el-menu-item>
         </template>
       </el-submenu>
     </el-menu>
@@ -25,15 +25,40 @@
 </template>
 
 <script>
-    export default {
+  import { getCateList } from "@/api/knowledge";
+  import { Tools } from "@/views/utils/Tools";
+  import CURD from '@/minix/curd';
+
+  export default {
       name: "knowledgeBar",
+      //数据获取
+      created() {
+        this.fetchCateData();
+      },
       data() {
         return {
+          cateList: [],
           searchForm: '',
           restaurants: [],
+          tools: Tools,
+          getCateList: getCateList || function () {},
+          mixins: [CURD],
         }
       },
       methods: {
+        getList(cate_id){
+          this.fetchData(cate_id);
+        },
+        fetchCateData() {
+          this.getCateList()
+            .then(response => {
+              let result = response.data;
+              this.cateList = result;
+            })
+            .catch(err => {
+              this.tools.error(this, err.response.data);
+            })
+        },
         querySearch(queryString, cb) {
           var restaurants = this.restaurants;
           var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;

@@ -75,7 +75,8 @@
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import {getList} from "@/api/knowledge"
+  import { getList } from "@/api/knowledge";
+  import { Tools } from "@/views/utils/Tools"
 
   export default {
     name: 'knowledge_index',
@@ -83,7 +84,7 @@
     mixins: [CURD],
     //数据获取
     created() {
-      this.fetchData();
+      this.fetchData(0);
     },
     data() {
       const tableData = [

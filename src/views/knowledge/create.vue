@@ -145,6 +145,7 @@
   import 'babel-polyfill';
   import myUpload from 'vue-image-crop-upload';
   import knowledgeBar from '@/views/components/knowledgeBar';
+  import { Tools } from "@/views/utils/Tools"
 
   export default {
     components: { Tinymce, myUpload,knowledgeBar },

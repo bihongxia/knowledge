@@ -1,8 +1,15 @@
 import request from '@/utils/request'
 
-export function getList(data) {
+export function getList(id) {
   return request({
-    url: 'http://local.cs.91renxin.com:5555/cate/list',
+    url: '/dir/list?cate='+id,
+    method: 'get',
+  })
+}
+
+export function getCateList() {
+  return request({
+    url: '/cate/list',
     method: 'get'
   })
 }
