@@ -31,12 +31,14 @@
           </el-row>
       </el-header>
       <el-main>
-        <el-table :data="tableData">
+        <el-table :data="tableData" v-loading="loading">
           <el-table-column label="名称" width="140">
             <template slot-scope="scope">
-              <i class="el-icon-folder" v-show="scope.row.file_type=='file_folder'"></i>
-              <i class="el-icon-document" v-show="scope.row.file_type=='file'"></i>
-              <span style="margin-left: 10px">{{ scope.row.file_name }}</span>
+              <div  style="cursor: pointer" @click="findDoc">
+                <i class="el-icon-folder" v-show="scope.row.file_type=='file_folder'" ></i>
+                <i class="el-icon-document" v-show="scope.row.file_type=='file'"></i>
+                <span style="margin-left: 10px;">{{ scope.row.file_name }}</span>
+              </div>
             </template>
           </el-table-column>
           <el-table-column label="状态" width="120">
@@ -56,6 +58,15 @@
           <el-table-column prop="file_size" label="大小">
           </el-table-column>
         </el-table>
+        <!-- 分页 -->
+        <el-row class="page">
+          <el-col :span="2" :offset="1">
+          </el-col>
+          <el-col :span="20">
+            <el-pagination background @current-change="pagination" @size-change="sizeChange" :current-page.sync="current_page" :page-sizes="[10,20,25,50]" layout="total,sizes,prev, pager, next" :page-size.sync="pageSize" :total="total">
+            </el-pagination>
+          </el-col>
+        </el-row>
       </el-main>
     </el-container>
   </el-container>
@@ -63,9 +74,17 @@
 
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
+  import CURD from '@/minix/curd';
+  import {getList} from "@/api/knowledge"
 
   export default {
+    name: 'knowledge_index',
     components: { knowledgeBar },
+    mixins: [CURD],
+    //数据获取
+    created() {
+      this.fetchData();
+    },
     data() {
       const tableData = [
         {
@@ -87,6 +106,9 @@
       ];
       return {
         tableData: tableData,
+        curd: {
+          getList: getList || function () {},
+        }
       }
     },
     methods:{
@@ -108,6 +130,10 @@
       },
       createDoc(){
         this.$router.replace('/knowledge/create');
+      },
+      findDoc(){
+        //向后台发送请求获取数据；
+        this.tableData = [];
       }
     }
   };
