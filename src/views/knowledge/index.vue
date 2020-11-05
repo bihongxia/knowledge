@@ -155,7 +155,6 @@
       },
       saveFile(){
         this.createDialogVisible = false;
-        console.log(this.form);
         this.curd.addFile(this.form)
           .then(response => {
             this.tools.success(this, "文件夹添加成功");

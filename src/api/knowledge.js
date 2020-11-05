@@ -30,12 +30,11 @@ export function getHotTitles(params = {}) {
 }
 
 //创建文件夹
-export function postFile(params = {}) {
-  console.log(params)
+export function postFile(data) {
   return request({
     url: '/article/create',
     method: 'post',
-    params
+    data
   })
 }
 
