@@ -1,148 +1,60 @@
 <template>
   <div class="app-container">
-      <el-card class="box-card">
-      <div class="text">
-        <el-form
-          :inline="true"
-          :model="formInline"
-          class="demo-form-inline"
-          size="mini"
-        >
-          <el-form-item label="用户名">
-            <el-input
-              v-model="formInline.user"
-              placeholder="用户名"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              @click="onSearch"
-            >查询</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              @click="addUser"
-            >添加用户</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              @click="getList"
-            >刷新列表</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-card>
-    <el-card class="box-card">    
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      element-loading-text="Loading"
-      border
-      fit
-      highlight-current-row
-    >
-      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-card class="box-card">
+      <el-input v-model="filterText" placeholder="输入关键字进行过滤" />
+      <el-tree
+        ref="tree"
+        v-loading="loading"
+        class="filter-tree"
+        :data="treeData"
+        :props="defaultProps"
+        default-expand-all
+        :filter-node-method="filterNode"
+        element-loading-background="rgba(255, 255, 255, 0.8)"
+        element-loading-text="加载中"
+      />
     </el-card>
   </div>
 </template>
-
 <script>
-import { getList } from '@/api/table'
-import { Message } from 'element-ui'
-
+import { list } from '@/api/department'
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
+
   data() {
     return {
-      list: null,
-      listLoading: true,
-      formInline: {
-        user: ''
+      filterText: '',
+      loading: false,
+      treeData: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
       }
     }
   },
-  created() {
-    this.fetchData()
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val)
+    }
   },
+  mounted() {
+    this.getDepartment()
+  },
+
   methods: {
-    fetchData() {
-      this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
+    filterNode(value, data) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
+    },
+    getDepartment() {
+      this.loading = true
+      list({ params: 1 }).then((response) => {
+        this.treeData = response.data
+        this.loading = false
+      }).catch(() => {
+        console.log('添加失败')
+        this.loading = false
       })
-    },
-    onSearch() {
-      console.log(this.dialogFormVisible)
-    },
-    addUser() {
-      this.dialogFormVisible = true
-      this.editRow = null
-    },
-    // 编辑角色
-    edit(row) {
-      this.dialogFormVisible = true
-      this.editRow = row
-    },
-    delete(row) {
-      console.log(row)
     }
   }
 }
 </script>
-<style lang="scss" scoped>
-.el-form-item {
-  margin: 0;
-  padding: 0;
-}
-.el-table .warning-row {
-  background: oldlace;
-}
-
-.el-table .success-row {
-  background: #c0f0a7 !important;
-}
-</style>
