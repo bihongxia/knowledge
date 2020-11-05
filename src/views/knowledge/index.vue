@@ -34,12 +34,12 @@
         <el-table :data="tableData" v-loading="loading">
           <el-table-column label="名称" width="140">
             <template slot-scope="scope">
-              <div  style="cursor: pointer" @click="getList(scope.row.id)" v-if="scope.row.file_type=='file_folder'">
-                <i class="el-icon-folder" v-show="scope.row.file_type=='file_folder'" ></i>
+              <div  style="cursor: pointer" @click="getList(scope.row.cate_id)" v-if="scope.row.is_dir">
+                <i class="el-icon-folder" v-show="scope.row.is_dir" ></i>
                 <span style="margin-left: 10px;">{{ scope.row.file_name }}</span>
               </div>
-              <div  style="cursor: pointer" @click="findDoc(scope.row.id)" v-else="scope.row.file_type=='file'">
-                <i class="el-icon-document" v-show="scope.row.file_type=='file'"></i>
+              <div  style="cursor: pointer" @click="findDoc(scope.row.id)" v-else="scope.row.is_dir">
+                <i class="el-icon-document" v-show="scope.row.is_dir"></i>
                 <span style="margin-left: 10px;">{{ scope.row.file_name }}</span>
               </div>
 
@@ -57,13 +57,13 @@
               <span style="margin-left: 10px">{{ scope.row.updated_at }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="user" label="更新者">
+          <el-table-column prop="create_user" label="更新者">
           </el-table-column>
-          <el-table-column prop="user" label="作者">
+          <el-table-column prop="create_user" label="作者">
           </el-table-column>
-          <el-table-column prop="user" label="复核人">
+          <el-table-column prop="check_user" label="复核人">
           </el-table-column>
-          <el-table-column prop="file_size" label="大小">
+          <el-table-column prop="size" label="大小">
           </el-table-column>
         </el-table>
         <!-- 分页 -->
@@ -95,26 +95,8 @@
       this.fetchData(0);
     },
     data() {
-      const tableData = [
-        {
-          file_name: '文件夹',
-          file_type: 'file_folder',
-          status: '1',
-          updated_at: '2020-10-20',
-          user: '毕宏霞',
-          file_size: '3M',
-        },
-        {
-          file_name: '文档',
-          file_type: 'file',
-          status: '0',
-          updated_at: '2020-10-20',
-          user: '毕宏霞',
-          file_size: '3M',
-        }
-      ];
       return {
-        tableData: tableData,
+        tableData: [],
         curd: {
           getList: getList || function () {},
         }
