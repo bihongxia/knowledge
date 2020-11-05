@@ -30,7 +30,7 @@ export default {
     wxLogin() {
       this.fullscreenLoading = true
       this.$store.dispatch('user/wxLogin', this.$route.query.userCode).then(() => {
-        // this.$router.push({ path: this.redirect || '/' })
+        this.$router.push({ path: this.redirect || '/' })
         this.fullscreenLoading = false
       }).catch(() => {
         this.fullscreenLoading = false
