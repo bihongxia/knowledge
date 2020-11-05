@@ -1,6 +1,6 @@
 <template>
   <el-container >
-    <knowledge-bar @getList="getList"></knowledge-bar>
+    <knowledge-bar @getList="getList" @dirSearch="dirSearch"></knowledge-bar>
     <el-container>
       <el-header style="height: 110px;">
         <div class="h-title">
@@ -36,11 +36,11 @@
             <template slot-scope="scope">
               <div  style="cursor: pointer" @click="getList(scope.row.cate_id)" v-if="scope.row.is_dir">
                 <i class="el-icon-folder" v-show="scope.row.is_dir" ></i>
-                <span style="margin-left: 10px;">{{ scope.row.file_name }}</span>
+                <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
               </div>
-              <div  style="cursor: pointer" @click="findDoc(scope.row.id)" v-else="scope.row.is_dir">
-                <i class="el-icon-document" v-show="scope.row.is_dir"></i>
-                <span style="margin-left: 10px;">{{ scope.row.file_name }}</span>
+              <div  style="cursor: pointer" @click="findDoc(scope.row.id)" v-else>
+                <i class="el-icon-document" v-show="scope.row"></i>
+                <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
               </div>
 
             </template>
@@ -57,11 +57,11 @@
               <span style="margin-left: 10px">{{ scope.row.updated_at }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="create_user" label="更新者">
+          <el-table-column prop="updated_user" label="更新者">
           </el-table-column>
           <el-table-column prop="create_user" label="作者">
           </el-table-column>
-          <el-table-column prop="check_user" label="复核人">
+          <el-table-column prop="review_user" label="复核人">
           </el-table-column>
           <el-table-column prop="size" label="大小">
           </el-table-column>
@@ -83,7 +83,7 @@
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import { getList } from "@/api/knowledge";
+  import { getList,getHotTitles } from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
@@ -99,12 +99,22 @@
         tableData: [],
         curd: {
           getList: getList || function () {},
+          getHotTitles: getHotTitles || function () {},
         }
       }
     },
     methods:{
       getList(id) {
         this.fetchData(id);
+      },
+      dirSearch(filename){
+        //向后台发送请求获取数据；
+        let params = { keywords: filename };
+        this.curd.getHotTitles(params)
+          .then(response => {
+            //成功执行内容
+            this.tableData = response.data;
+          })
       },
       goBack(){
 
@@ -125,10 +135,7 @@
       createDoc(){
         this.$router.replace('/knowledge/create');
       },
-      findDoc(){
-        //向后台发送请求获取数据；
-        this.tableData = [];
-      }
+
     }
   };
 </script>

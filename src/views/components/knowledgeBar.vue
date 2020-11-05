@@ -1,12 +1,11 @@
 <template>
   <el-aside width="210px;">
     <el-autocomplete
+      v-model="searchName"
       prefix-icon="el-icon-search"
       class="inline-input"
-      v-model="searchForm"
-      :fetch-suggestions="querySearch"
+      :fetch-suggestions="querySearchAsync"
       placeholder="请输入内容"
-      :trigger-on-focus="false"
       @select="handleSelect"
     ></el-autocomplete>
     <el-menu>
@@ -17,7 +16,7 @@
       <el-submenu index="">
         <template slot="title">文档分类</template>
         <template>
-          <el-menu-item v-for="cate in cateList" @click="getFileList(cate.id)"><i class="el-icon-s-opportunity"></i>{{cate.name}}</el-menu-item>
+          <el-menu-item v-for="cate in cateList" :key="cate.id" @click="getFileList(cate.id)"><i class="el-icon-s-opportunity"></i>{{cate.name}}</el-menu-item>
         </template>
       </el-submenu>
     </el-menu>
@@ -25,7 +24,7 @@
 </template>
 
 <script>
-  import { getCateList } from "@/api/knowledge";
+  import { getCateList,getHotTitles } from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools";
   import CURD from '@/minix/curd';
 
@@ -37,11 +36,15 @@
       },
       data() {
         return {
+          searchName:'',
           cateList: [],
-          searchForm: '',
           docTitles: [],
           tools: Tools,
-          getCateList: getCateList || function () {},
+          curd: {
+            getCateList: getCateList || function () {},
+            getHotTitles: getHotTitles || function () {},
+          },
+
           mixins: [CURD],
         }
       },
@@ -50,7 +53,7 @@
           this.$emit("getList", cate_id);
         },
         fetchCateData() {
-          this.getCateList()
+          this.curd.getCateList()
             .then(response => {
               let result = response.data;
               this.cateList = result;
@@ -59,38 +62,28 @@
               this.tools.error(this, err.response.data);
             })
         },
-        querySearch(queryString, cb) {
-          var docTitles = this.docTitles;
-          var results = queryString ? docTitles.filter(this.createFilter(queryString)) : docTitles;
-          // 调用 callback 返回建议列表的数据
-          cb(results);
-        },
-        createFilter(queryString) {
-          return (docTitles) => {
-            return (docTitles.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-          };
-        },
-        loadAll() {
-          return [
-            { "value": "三全鲜食（北新泾店）", "id": "1" },
-            { "value": "Hot honey 首尔炸鸡（仙霞路）", "id": "2" },
-            { "value": "新旺角茶餐厅", "id": "3" },
-            { "value": "泷千家(天山西路店)", "id": "4" },
-            { "value": "胖仙女纸杯蛋糕（上海凌空店）", "id": "5" },
-            { "value": "贡茶", "id": "6" },
-            { "value": "豪大大香鸡排超级奶爸", "id": "7" },
-            { "value": "茶芝兰（奶茶，手抓饼）", "id": "8" },
-            { "value": "十二泷町", "id": "9" },
-            { "value": "星移浓缩咖啡", "id": "10" },
-          ];
+        querySearchAsync(queryString, callback) {
+          if (queryString && queryString.length > 1 ){
+            let list = [{}];
+            let params = { keywords: queryString, type: 1 };
+            this.curd.getHotTitles(params)
+              .then(response => {
+                for(let i of response.data){
+                  i.value = i.filename;  //将想要展示的数据作为value
+                }
+                list = response.data;
+                // 调用 callback 返回建议列表的数据
+                callback(list);
+              })
+          }
         },
         //搜索
         handleSelect(item) {
-          this.$emit("getFile", item.id);
-        }
+          console.log(item.filename);
+          this.$emit("dirSearch", item.filename);
+        },
       },
       mounted() {
-        this.docTitles = this.loadAll();
       }
     }
 </script>

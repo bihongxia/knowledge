@@ -14,6 +14,17 @@ export function getCateList() {
   })
 }
 
+export function getHotTitles(params = {}) {
+  return request({
+    url: '/dir/search',
+    method: 'get',
+    params: {
+      keywords: params.keywords,
+      type: params.type
+    }
+  })
+}
+
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return request({
     url: baseUrl,
