@@ -32,7 +32,7 @@
       </el-header>
       <el-main>
         <el-table :data="tableData" v-loading="loading">
-          <el-table-column label="名称" width="140">
+          <el-table-column label="名称">
             <template slot-scope="scope">
               <div  style="cursor: pointer" @click="getList(scope.row.cate_id,scope.row.id)" v-if="scope.row.is_dir">
                 <i class="el-icon-folder" v-show="scope.row.is_dir" ></i>
@@ -45,12 +45,12 @@
 
             </template>
           </el-table-column>
-          <el-table-column label="状态" width="120">
-            <template slot-scope="scope">
-              <i class="el-icon-success" v-if="scope.row.status=='1'"></i>
-              <i class="el-icon-upload" v-else></i>
-            </template>
-          </el-table-column>
+          <!--<el-table-column label="状态" width="120">-->
+            <!--<template slot-scope="scope">-->
+              <!--<i class="el-icon-success" v-if="scope.row.status=='1'"></i>-->
+              <!--<i class="el-icon-upload" v-else></i>-->
+            <!--</template>-->
+          <!--</el-table-column>-->
           <el-table-column label="最近更新">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
@@ -59,11 +59,20 @@
           </el-table-column>
           <el-table-column prop="updated_user" label="更新者">
           </el-table-column>
-          <el-table-column prop="create_user" label="作者">
+          <el-table-column label="作者">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.create_user }}</span>
+            </template>
           </el-table-column>
-          <el-table-column prop="review_user" label="复核人">
+          <el-table-column label="复核人">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.review_user }}</span>
+            </template>
           </el-table-column>
-          <el-table-column prop="size" label="大小">
+          <el-table-column label="大小">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.size }}</span>
+            </template>
           </el-table-column>
         </el-table>
         <!-- 分页 -->
@@ -124,12 +133,8 @@
       },
       createFolder(){
         this.tableData.unshift({
-          file_name: '',
-          file_type: 'file_folder',
-          status: '0',
-          updated_at: '刚刚',
-          user: '毕宏霞',
-          file_size: '--',
+          filename: '',
+          is_dir: 0,
         });
       },
       createDoc(){
