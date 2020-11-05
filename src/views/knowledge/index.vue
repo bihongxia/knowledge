@@ -34,23 +34,17 @@
         <el-table :data="tableData" v-loading="loading">
           <el-table-column label="名称">
             <template slot-scope="scope">
-              <div  style="cursor: pointer" @click="getList(scope.row.cate_id,scope.row.id)" v-if="scope.row.is_dir">
-                <i class="el-icon-folder" v-show="scope.row.is_dir" ></i>
+              <div  style="cursor: pointer" v-if="scope.row.is_dir==1" @click="getList(scope.row.cate_id,scope.row.id)">
+                <i class="el-icon-folder"></i>
                 <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
               </div>
               <div  style="cursor: pointer" @click="findDoc(scope.row.id)" v-else>
-                <i class="el-icon-document" v-show="scope.row"></i>
+                <i class="el-icon-document"></i>
                 <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
               </div>
 
             </template>
           </el-table-column>
-          <!--<el-table-column label="状态" width="120">-->
-            <!--<template slot-scope="scope">-->
-              <!--<i class="el-icon-success" v-if="scope.row.status=='1'"></i>-->
-              <!--<i class="el-icon-upload" v-else></i>-->
-            <!--</template>-->
-          <!--</el-table-column>-->
           <el-table-column label="最近更新">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
@@ -72,6 +66,12 @@
           <el-table-column label="大小">
             <template slot-scope="scope">
               <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.size }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="审核状态" width="120">
+            <template slot-scope="scope">
+              <i class="el-icon-success" v-if="scope.row.status=='1'"></i>
+              <i class="el-icon-upload" v-else></i>
             </template>
           </el-table-column>
         </el-table>
@@ -133,8 +133,8 @@
       },
       createFolder(){
         this.tableData.unshift({
-          filename: '',
-          is_dir: 0,
+          filename: "<input type='text'/>",
+          is_dir: 1,
         });
       },
       createDoc(){
