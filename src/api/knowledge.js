@@ -54,7 +54,13 @@ export function getCateAndDepat(params = {}) {
   })
 }
 
-
+//审核
+export function checkArticle(params = {}) {
+  return request({
+    url: '/dir/check',
+    method: 'get',
+  })
+}
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return request({
     url: baseUrl,

@@ -63,10 +63,10 @@
               <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.review_user }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="审核状态" width="120">
-            <template slot-scope="scope">
+          <el-table-column label="审核状态" width="120" >
+            <template slot-scope="scope" v-if="!scope.row.is_dir">
               <i class="el-icon-success" v-if="scope.row.status=='1'"></i>
-              <i class="el-icon-upload" v-else></i>
+              <i class="el-icon-time" v-else @click="check(scope.row.id)"></i>
             </template>
           </el-table-column>
         </el-table>
@@ -103,7 +103,7 @@
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import { getList,getHotTitles, postFile } from "@/api/knowledge";
+  import { getList,getHotTitles, postFile, checkArticle } from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
@@ -121,7 +121,8 @@
         curd: {
           getList: getList || function () {},
           getHotTitles: getHotTitles || function () {},
-          addFile: postFile || function () {}
+          addFile: postFile || function () {},
+          checkArticle: checkArticle || function () {},
         },
         form: {
           type : 1,
@@ -167,6 +168,14 @@
       createDoc(){
         this.$router.replace('/knowledge/create');
       },
+      //复核
+      check(id) {
+        this.curd.checkArticle(id)
+                .then(response => {
+                  this.tools.success(this, "复核成功");
+                  this.fetchData({cate_id : this.form.cate_id});
+                })
+      }
 
     }
   };
