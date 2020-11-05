@@ -68,15 +68,6 @@
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
         <el-table-column
-          label="昵称"
-          width="120"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.nickname }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
           label="邮箱"
           align="center"
         >

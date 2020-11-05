@@ -32,7 +32,7 @@ export function logout() {
 }
 export function getUserlist(data) {
   return request({
-    url: '/admin/user/list',
+    url: '/user/list',
     method: 'post',
     data
   })
@@ -46,7 +46,7 @@ export function edit(data) {
 }
 export function store(data) {
   return request({
-    url: '/admin/user/store',
+    url: '/user/store',
     method: 'post',
     data
   })
