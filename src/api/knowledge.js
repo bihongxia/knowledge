@@ -61,6 +61,23 @@ export function checkArticle(params = {}) {
     method: 'get',
   })
 }
+
+//删除附件
+export function fileDelete(params = {}) {
+  return request({
+    url: '/dir/check',
+    method: 'get',
+  })
+}
+
+//展示文章
+export function findArticle(params = {}) {
+  return request({
+    url: '/article/check',
+    method: 'get',
+  })
+}
+
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return request({
     url: baseUrl,

@@ -59,13 +59,14 @@
           <el-form-item label="文档附件">
             <el-upload
               class="upload-demo"
+              accept="pdf,word,excel"
               action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
               :on-remove="handleRemove"
-              :before-remove="beforeRemove"
+              :on-success="handleSuccess"
+              :before-upload="beforeUploadFile"
               multiple
               :limit="3"
-              :on-exceed="handleExceed"
+              :auto-upload="true"
               :file-list="createForm.fileList">
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">只能上传pdf/word文件，且不超过500kb</div>
@@ -73,7 +74,7 @@
           </el-form-item>
           <el-form-item label="标题图片">
             <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
-            <my-upload field="img" @crop-success="cropSuccess" v-model="createForm.image" :width="100" :height="100" img-format="jpg" :size="size"></my-upload>
+            <my-upload field="img" @crop-success="cropSuccess" v-model="createForm.image" :width="100" :height="100" img-format="jpg" :size="size" v-show="createForm.show"></my-upload>
             <img :src="avatar">
           </el-form-item>
           <el-form-item label="权限设置">
@@ -126,21 +127,6 @@
     </el-container>
   </el-container>
 </template>
-<style>
-  .el-header {
-    color: #333;
-    border-bottom:2px solid #ccc;
-  }
-  .h-title{
-    height:60px;
-    line-height: 60px;
-    border-bottom: 1px solid #ccc;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-
-</style>
 
 <script>
   import Tinymce from '@/components/Tinymce';
@@ -148,11 +134,12 @@
   import myUpload from 'vue-image-crop-upload';
   import knowledgeBar from '@/views/components/knowledgeBar';
   import { Tools } from "@/views/utils/Tools";
-  import { getCateAndDepat } from "@/api/knowledge"
+  import { getCateAndDepat,fileDelete } from "@/api/knowledge"
 
   export default {
     components: { Tinymce, myUpload,knowledgeBar },
     created(){
+      //获取部门、分类
       this.curd.getCateAndDepat()
         .then(response => {
           let result = response.data;
@@ -167,11 +154,13 @@
       return {
         curd:{
           getCateAndDepat: getCateAndDepat || function () {},
+          fileDelete: fileDelete || function () {}
         },
         departments: [], //部门
         cates: [], //文档分类
         tableData: [],
         search: '',
+        //上传附件相关
         createForm: {
           name: '',
           region: '',
@@ -184,7 +173,7 @@
           content:'',
           avatar: "",  //用于存储剪切完图片的base64Data和显示回调图片
           show: false,  //剪切框显示和隐藏的flag
-          fileList: [],
+          fileList: [], //文件上传列表
           radio3: '1',
           radio4: '1',
           selectAuth: [],
@@ -234,17 +223,28 @@
         this.avatar = imgDataUrl;
         console.log(imgDataUrl)//这里打印出来的是base64格式的资源
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      //----附件上传的钩子从这里开始----
+      handleRemove(file) {
+        let fileNames = file.response.data.split("/");
+        this.curd.fileDelete(fileNames[fileNames.length - 1]).then(res => {
+          if (res.data.code == "0000") {
+            this.fileList.splice(file, 1);
+          }
+        });
       },
-      handlePreview(file) {
-        console.log(file);
+      beforeUploadFile(file) {
+        const isLt10M = file.size / 1024 / 1024 < 10;
+        if (!isLt10M) {
+          this.$message.error('上传文件大小不能超过10MB!')
+          return false
+        }
+        // if (!isText && !isTextComputer) {
+        //   this.$message.error('上传文件类型必须为excel!')
+        //   return false
+        // }
       },
-      handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-      },
-      beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
+      handleSuccess(file){
+        this.createForm.fileList.push({});
       },
       handleClose(done) {
         this.$confirm('确认关闭？')
@@ -276,3 +276,17 @@
 
   };
 </script>
+
+<style>
+  .el-header {
+    color: #333;
+    border-bottom:2px solid #ccc;
+  }
+  .h-title{
+    height:60px;
+    line-height: 60px;
+    border-bottom: 1px solid #ccc;
+    font-size: 18px;
+    font-weight: bold;
+  }
+</style>
