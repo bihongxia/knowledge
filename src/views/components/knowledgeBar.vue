@@ -63,7 +63,7 @@
             })
         },
         querySearchAsync(queryString, callback) {
-          if (queryString && queryString.length > 1 ){
+          if (queryString && queryString.length >= 1 ){
             let list = [{}];
             let params = { keywords: queryString, type: 1 };
             this.curd.getHotTitles(params)

@@ -34,7 +34,7 @@
         <el-table :data="tableData" v-loading="loading">
           <el-table-column label="名称" width="140">
             <template slot-scope="scope">
-              <div  style="cursor: pointer" @click="getList(scope.row.cate_id)" v-if="scope.row.is_dir">
+              <div  style="cursor: pointer" @click="getList(scope.row.cate_id,scope.row.id)" v-if="scope.row.is_dir">
                 <i class="el-icon-folder" v-show="scope.row.is_dir" ></i>
                 <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
               </div>
@@ -92,7 +92,7 @@
     mixins: [CURD],
     //数据获取
     created() {
-      this.fetchData(0);
+      this.fetchData({cate_id : 0});
     },
     data() {
       return {
@@ -104,8 +104,8 @@
       }
     },
     methods:{
-      getList(id) {
-        this.fetchData(id);
+      getList(cate_id, fid) {
+        this.fetchData({cate_id : cate_id, fid: fid});
       },
       dirSearch(filename){
         //向后台发送请求获取数据；

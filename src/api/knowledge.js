@@ -1,9 +1,13 @@
 import request from '@/utils/request'
 
-export function getList(id) {
+export function getList(params = {}) {
   return request({
-    url: '/dir/list?cate='+id,
+    url: '/dir/list',
     method: 'get',
+    params: {
+      cate: params.cate_id,
+      fid: params.fid
+    }
   })
 }
 
