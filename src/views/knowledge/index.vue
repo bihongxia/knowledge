@@ -63,11 +63,6 @@
               <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.review_user }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="大小">
-            <template slot-scope="scope">
-              <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.size }}</span>
-            </template>
-          </el-table-column>
           <el-table-column label="审核状态" width="120">
             <template slot-scope="scope">
               <i class="el-icon-success" v-if="scope.row.status=='1'"></i>
@@ -86,13 +81,29 @@
         </el-row>
       </el-main>
     </el-container>
+    <el-dialog title="新建文件夹" :visible.sync="createDialogVisible" width="20%" :close-on-click-modal="false" @close="cancel();return true;">
+      <el-form :model="form" label-width="80px">
+        <el-row class="first-row">
+          <el-col :span="21" class="first-column" >
+            <el-form-item label="文件夹">
+              <el-input v-model="form.name"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="saveFile()" size="">确 定</el-button>
+        <el-button @click="cancel()">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </el-container>
 </template>
 
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import { getList,getHotTitles } from "@/api/knowledge";
+  import { getList,getHotTitles, postFile } from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
@@ -106,15 +117,23 @@
     data() {
       return {
         tableData: [],
+        createDialogVisible: false,
         curd: {
           getList: getList || function () {},
           getHotTitles: getHotTitles || function () {},
+          addFile: postFile || function () {}
+        },
+        form: {
+          type : 1,
+          cate_id : 0,
+          name : '',
         }
       }
     },
     methods:{
       getList(cate_id, fid) {
         this.fetchData({cate_id : cate_id, fid: fid});
+        this.form.cate_id = cate_id;
       },
       dirSearch(filename){
         //向后台发送请求获取数据；
@@ -132,10 +151,19 @@
 
       },
       createFolder(){
-        this.tableData.unshift({
-          filename: "<input type='text'/>",
-          is_dir: 1,
-        });
+        this.createDialogVisible = true;
+      },
+      saveFile(){
+        this.createDialogVisible = false;
+        console.log(this.form);
+        this.curd.addFile(this.form)
+          .then(response => {
+            this.tools.success(this, "文件夹添加成功");
+            this.fetchData({cate_id : this.form.cate_id});
+          })
+          .catch(err => {
+            this.tools.error(this, err.response.data);
+          });
       },
       createDoc(){
         this.$router.replace('/knowledge/create');

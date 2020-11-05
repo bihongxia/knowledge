@@ -2,11 +2,11 @@ import request from '@/utils/request'
 
 export function getList(params = {}) {
   return request({
-    url: '/dir/list',
+    url: '/article/dir',
     method: 'get',
     params: {
-      cate: params.cate_id,
-      fid: params.fid
+      cate_id: params.cate_id,
+      aid: params.fid
     }
   })
 }
@@ -28,6 +28,33 @@ export function getHotTitles(params = {}) {
     }
   })
 }
+
+//创建文件夹
+export function postFile(params = {}) {
+  console.log(params)
+  return request({
+    url: '/article/create',
+    method: 'post',
+    params
+  })
+}
+
+//创建文章
+export function postArticle(params) {
+  return request({
+    url: '/article/create',
+    method: 'post',
+    params
+  })
+}
+
+export function getCateAndDepat(params = {}) {
+  return request({
+    url: '/dir/search',
+    method: 'get',
+  })
+}
+
 
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return request({

@@ -6,33 +6,37 @@
         <div class="h-title">新增文档</div>
       </el-header>
       <el-main>
-        <el-form ref="form" :model="sizeForm" label-width="80px">
+        <el-form ref="form" :model="createForm" label-width="80px">
           <el-form-item label="主题">
-            <el-input v-model="sizeForm.name"></el-input>
+            <el-input v-model="createForm.title"></el-input>
           </el-form-item>
           <el-row>
             <el-col :span="12">
               <el-form-item label="创建者">
-                <el-input v-model="sizeForm.name"></el-input>
+                <el-input v-model="createForm.create_user"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="选择时间">
-                <el-date-picker type="date" placeholder="选择时间" v-model="sizeForm.date1" style="width: 100%;"></el-date-picker>
+                <el-date-picker
+                  v-model="createForm.created_at"
+                  type="datetime"
+                  placeholder="选择日期时间"
+                  default-time="12:00:00">
+                </el-date-picker>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
               <el-form-item label="作者">
-                <el-input v-model="sizeForm.name"></el-input>
+                <el-input v-model="createForm.create_user"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="部门">
-                <el-select v-model="sizeForm.region" placeholder="请选择活动区域">
-                  <el-option label="区域一" value="shanghai"></el-option>
-                  <el-option label="区域二" value="beijing"></el-option>
+                <el-select v-model="createForm.department_id" placeholder="请选择部门">
+                  <el-option v-for="department in departments" label="department.name" value="department.id" :key="department.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -40,17 +44,16 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="文档分类">
-                <el-select v-model="sizeForm.region" placeholder="请选择活动区域">
-                  <el-option label="区域一" value="shanghai"></el-option>
-                  <el-option label="区域二" value="beijing"></el-option>
+                <el-select v-model="createForm.cate_id" placeholder="请选择文档分类">
+                  <el-option v-for="cate in cates" label="cate.name" value="cate.id" :key="cate.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-form-item label="内容简要">
-            <el-input type="textarea" v-model="sizeForm.content"></el-input>
+            <el-input type="textarea" v-model="createForm.desc"></el-input>
             <div>
-              <tinymce v-model="sizeForm.content" :height="300" />
+              <tinymce v-model="createForm.content" :height="300" />
             </div>
           </el-form-item>
           <el-form-item label="文档附件">
@@ -63,14 +66,14 @@
               multiple
               :limit="3"
               :on-exceed="handleExceed"
-              :file-list="sizeForm.fileList">
+              :file-list="createForm.fileList">
               <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div slot="tip" class="el-upload__tip">只能上传pdf/word文件，且不超过500kb</div>
             </el-upload>
           </el-form-item>
           <el-form-item label="标题图片">
             <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
-            <my-upload field="img" @crop-success="cropSuccess" v-model="sizeForm.show" :width="400" :height="200" img-format="jpg" :size="size"></my-upload>
+            <my-upload field="img" @crop-success="cropSuccess" v-model="createForm.image" :width="100" :height="100" img-format="jpg" :size="size"></my-upload>
             <img :src="avatar">
           </el-form-item>
           <el-form-item label="权限设置">
@@ -83,12 +86,11 @@
             width="30%"
             :before-close="handleClose">
             <el-form-item label="访问权限">
-              <el-radio v-model="sizeForm.radio3" label="1" border size="medium">共享</el-radio>
-              <el-radio v-model="sizeForm.radio3" label="2" border size="medium">私密</el-radio>
-
+              <el-radio v-model="createForm.radio3" label="1" border size="medium">共享</el-radio>
+              <el-radio v-model="createForm.radio3" label="2" border size="medium">私密</el-radio>
               <div>
                 <el-select
-                  v-show="sizeForm.radio3 == '2'"
+                  v-show="createForm.radio3 == '2'"
                   v-model="value"
                   multiple
                   filterable
@@ -107,8 +109,8 @@
               </div>
             </el-form-item>
             <el-form-item label="读写权限">
-              <el-radio v-model="sizeForm.radio4" label="1" border size="medium">浏览</el-radio>
-              <el-radio v-model="sizeForm.radio4" label="2" border size="medium">下载</el-radio>
+              <el-radio v-model="createForm.radio4" label="1" border size="medium">浏览</el-radio>
+              <el-radio v-model="createForm.radio4" label="2" border size="medium">下载</el-radio>
             </el-form-item>
             <span slot="footer" class="dialog-footer">
               <el-button @click="authDialog = false">取 消</el-button>
@@ -145,33 +147,32 @@
   import 'babel-polyfill';
   import myUpload from 'vue-image-crop-upload';
   import knowledgeBar from '@/views/components/knowledgeBar';
-  import { Tools } from "@/views/utils/Tools"
+  import { Tools } from "@/views/utils/Tools";
+  import { getCateAndDepat } from "@/api/knowledge"
 
   export default {
     components: { Tinymce, myUpload,knowledgeBar },
+    created(){
+      this.curd.getCateAndDepat()
+        .then(response => {
+          let result = response.data;
+          this.departments = result.departments;
+          this.cates = result.cates;
+        })
+        .catch(err => {
+          this.tools.error(this, err.response.data);
+        })
+    },
     data() {
-      const tableData = [
-        {
-          file_name: '文件夹',
-          file_type: 'file_folder',
-          status: '1',
-          updated_at: '2020-10-20',
-          user: '毕宏霞',
-          file_size: '3M',
-        },
-        {
-          file_name: '文档',
-          file_type: 'file',
-          status: '0',
-          updated_at: '2020-10-20',
-          user: '毕宏霞',
-          file_size: '3M',
-        }
-      ];
       return {
-        tableData: tableData,
+        curd:{
+          getCateAndDepat: getCateAndDepat || function () {},
+        },
+        departments: [], //部门
+        cates: [], //文档分类
+        tableData: [],
         search: '',
-        sizeForm: {
+        createForm: {
           name: '',
           region: '',
           date1: '',
@@ -183,7 +184,6 @@
           content:'',
           avatar: "",  //用于存储剪切完图片的base64Data和显示回调图片
           show: false,  //剪切框显示和隐藏的flag
-          size: 2.1,
           fileList: [],
           radio3: '1',
           radio4: '1',
@@ -194,6 +194,7 @@
         value: [],
         list: [],
         loading: false,
+        size: '',
         states: ["Alabama", "Alaska", "Arizona",
           "Arkansas", "California", "Colorado",
           "Connecticut", "Delaware", "Florida",
@@ -220,22 +221,12 @@
       goFoward(){
 
       },
-      createFolder(){
-        this.tableData.unshift({
-          file_name: '',
-          file_type: 'file_folder',
-          status: '0',
-          updated_at: '刚刚',
-          user: '毕宏霞',
-          file_size: '--',
-        });
-      },
       createDoc(){
 
       },
       //控制剪切框的显示和隐藏
       toggleShow() {
-        this.sizeForm.show = !this.sizeForm.show;
+        this.createForm.show = !this.createForm.show;
       },
       //剪切成功后的回调函数
       cropSuccess(imgDataUrl) {
