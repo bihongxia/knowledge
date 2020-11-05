@@ -60,5 +60,8 @@
     "node": ">=8.9",
     "npm": ">= 3.0.0"
   },
+  "resolutions": {
+    "@vue/cli-service/portfinder": "1.0.21"
+  },
   "license": "MIT"
 }

@@ -1,11 +1,11 @@
 <template>
-  <div>正在登录</div>
+  <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="正在登录"> </div>
 </template>
 <script>
-import { wxLogin } from '@/api/user'
 export default {
   data() {
     return {
+      fullscreenLoading: false,
       loginForm: {
         username: 'admin',
         password: '111111'
@@ -20,16 +20,20 @@ export default {
       console.log(this.$route.query.userCode)
       this.loading = true
       this.$store.dispatch('user/login', this.loginForm).then(() => {
-        this.$router.push({ path: this.redirect || '/' })
+        console.log(111)
+        // this.$router.push({ path: this.redirect || '/' })
         this.loading = false
       }).catch(() => {
         this.loading = false
       })
     },
     wxLogin() {
-      console.log(this.$route.query)
-      wxLogin({ userCode: this.$route.query }).then(response => {
-        console.log(response)
+      this.fullscreenLoading = true
+      this.$store.dispatch('user/wxLogin', this.$route.query.userCode).then(() => {
+        // this.$router.push({ path: this.redirect || '/' })
+        this.fullscreenLoading = false
+      }).catch(() => {
+        this.fullscreenLoading = false
       })
     }
   }
