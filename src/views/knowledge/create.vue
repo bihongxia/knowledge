@@ -47,7 +47,7 @@
           </el-form-item>
           <el-form-item label="标题图片">
             <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
-            <my-upload field="img" @crop-success="cropSuccess" v-model="createForm.image" :width="100" :height="100" img-format="jpg" :size="size" v-show="createForm.show"></my-upload>
+            <my-upload field="img" @crop-success="cropSuccess" v-model="createForm.image" :width="100" :height="100" img-format="jpg" :size="size" v-show="show"></my-upload>
             <img :src="createForm.avatar">
           </el-form-item>
           <el-form-item label="权限设置">
@@ -65,7 +65,7 @@
               <div>
                 <el-select
                   v-show="createForm.permissions.visit == '2'"
-                  v-model="value"
+                  v-model="createForm.permissions.names"
                   multiple
                   filterable
                   remote
@@ -145,10 +145,10 @@
           content:'',
           fileList: [],
           avatar: "",  //用于存储剪切完图片的base64Data和显示回调图片
-          show: false,  //剪切框显示和隐藏的flag
           permissions:{
             visit : '1',
             todo: '1',
+            names: ''
           },
         },
         authDialog: false,
@@ -157,6 +157,7 @@
         list: [],
         loading: false,
         size: '',
+        show: false,  //剪切框显示和隐藏的flag
         states: ["Alabama", "Alaska", "Arizona",
           "Arkansas", "California", "Colorado",
           "Connecticut", "Delaware", "Florida",
