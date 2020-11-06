@@ -83,7 +83,7 @@ export function fileDelete(params = {}) {
 }
 
 //展示文章
-export function findArticle(params = {}) {
+export function findArticle( params = {}) {
   return request({
     url: '/article/check',
     method: 'get',

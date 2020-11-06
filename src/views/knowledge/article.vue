@@ -2,7 +2,9 @@
   <el-container >
     <knowledge-bar @getList="getList" @dirSearch="dirSearch"></knowledge-bar>
     <el-container>
+      <div>
 
+      </div>
     </el-container>
   </el-container>
 </template>
@@ -10,7 +12,7 @@
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import { getList,getHotTitles, postFile, checkArticle } from "@/api/knowledge";
+  import { findArticle } from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
@@ -19,30 +21,20 @@
     mixins: [CURD],
     //数据获取
     created() {
-      this.fetchData({cate_id : 0});
+      this.curd.findArticle()
+        .then(res => {
+           this.article = res.data;
+        })
     },
     data() {
       return {
-        tableData: [],
-        createDialogVisible: false,
+        article: [],
         curd: {
           findArticle: findArticle || function () {},
         },
       }
     },
     methods:{
-
-      cancel(){
-        this.createDialogVisible = false;
-      },
-      //查看文章
-      findDoc(id) {
-        this.curd.findArticle()
-          .then(res => {
-
-          })
-      }
-
     }
   };
 </script>
