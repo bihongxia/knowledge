@@ -73,7 +73,6 @@
               tooltip-effect="dark"
               style="width: 100%"
               element-loading-text="获取部门成员"
-              @selection-change="handleSelectionChange"
             >
               <el-table-column
                 type="selection"
@@ -138,35 +137,7 @@ export default {
         label: '北京烤鸭'
       }],
       value: '',
-      tableData: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
+      tableData: [],
       multipleSelection: [],
       listLoading: false
 
@@ -216,8 +187,10 @@ export default {
     },
     assign(data) {
       this.dialogFormVisible = true
+      this.listLoading = false
       getUsers(data).then(response => {
         this.listLoading = false
+        this.tableData = response.data
       })
     },
     getRoles() {
