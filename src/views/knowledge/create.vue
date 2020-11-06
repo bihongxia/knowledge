@@ -29,20 +29,12 @@
             <el-col :span="5">
               <el-form-item label="文档分类">
                 <el-select v-model="createForm.cate_id" placeholder="请选择文档分类">
-                  <el-option v-for="cate in cates" label="cate.name" value="cate.id" :key="cate.id"></el-option>
+                  <el-option v-for="cate in cates" :label="cate.name" :value="cate.id" :key="cate.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <!--<el-col :span="12">
-              <el-form-item label="部门">
-                <el-select v-model="createForm.department_id" placeholder="请选择部门">
-                  <el-option v-for="department in departments" label="department.name" value="department.id" :key="department.id"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>-->
-
           </el-row>
           <el-form-item label="内容简要">
             <el-input type="textarea" v-model="createForm.desc"></el-input>
@@ -51,7 +43,7 @@
             </div>
           </el-form-item>
           <el-form-item label="文档附件">
-            <attach-upload></attach-upload>
+            <attach-upload :fileList="createForm.fileList"></attach-upload>
           </el-form-item>
           <el-form-item label="标题图片">
             <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
@@ -68,11 +60,11 @@
             width="30%"
             :before-close="handleClose">
             <el-form-item label="访问权限">
-              <el-radio v-model="createForm.radio3" label="1" border size="medium">共享</el-radio>
-              <el-radio v-model="createForm.radio3" label="2" border size="medium">私密</el-radio>
+              <el-radio v-model="createForm.permissions.visit" label="1" border size="medium">共享</el-radio>
+              <el-radio v-model="createForm.permissions.visit" label="2" border size="medium">私密</el-radio>
               <div>
                 <el-select
-                  v-show="createForm.radio3 == '2'"
+                  v-show="createForm.permissions.visit == '2'"
                   v-model="value"
                   multiple
                   filterable
@@ -91,8 +83,8 @@
               </div>
             </el-form-item>
             <el-form-item label="读写权限">
-              <el-radio v-model="createForm.radio4" label="1" border size="medium">浏览</el-radio>
-              <el-radio v-model="createForm.radio4" label="2" border size="medium">下载</el-radio>
+              <el-radio v-model="createForm.permissions.todo" label="1" border size="medium">浏览</el-radio>
+              <el-radio v-model="createForm.permissions.todo" label="2" border size="medium">下载</el-radio>
             </el-form-item>
             <span slot="footer" class="dialog-footer">
               <el-button @click="authDialog = false">取 消</el-button>
@@ -116,28 +108,25 @@
   import knowledgeBar from '@/views/components/knowledgeBar';
   import attachUpload from '@/views/components/attachUpload';
   import { Tools } from "@/views/utils/Tools";
-  import { getCateAndDepat,fileDelete } from "@/api/knowledge"
+  import { getCateList, fileDelete, postArticle } from "@/api/knowledge"
 
   export default {
     components: { Tinymce, myUpload, knowledgeBar, attachUpload },
-    created(){
-      //获取部门、分类
-      this.curd.getCateAndDepat()
+    //数据获取
+    created() {
+      //获取分类
+      this.curd.getCateList()
         .then(response => {
-          let result = response.data;
-          this.departments = result.departments;
-          this.cates = result.cates;
-        })
-        .catch(err => {
-          this.tools.error(this, err.response.data);
+          this.cates = response.data;
         })
     },
     data() {
       return {
         tools: Tools,
         curd:{
-          getCateAndDepat: getCateAndDepat || function () {},
-          fileDelete: fileDelete || function () {}
+          getCateList: getCateList || function () {},
+          fileDelete: fileDelete || function () {},
+          postArticle: postArticle || function () {},
         },
         departments: [], //部门
         cates: [], //文档分类
@@ -145,20 +134,22 @@
         search: '',
         //上传附件相关
         createForm: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
+          title:'',
+          create_user: '',
+          created_at: '',
+          cate_id:'',
+          // delivery: false,
+         // type: [],
+         // resource: '',
           desc: '',
           content:'',
+          fileList: [],
           avatar: "",  //用于存储剪切完图片的base64Data和显示回调图片
           show: false,  //剪切框显示和隐藏的flag
-          radio3: '1',
-          radio4: '1',
-          selectAuth: [],
+          permissions:{
+            visit : '1',
+            todo: '1',
+          },
         },
         authDialog: false,
         options: [],
@@ -186,15 +177,6 @@
       }
     },
     methods:{
-      goBack(){
-
-      },
-      goFoward(){
-
-      },
-      createDoc(){
-
-      },
       //控制剪切框的显示和隐藏
       toggleShow() {
         this.createForm.show = !this.createForm.show;
@@ -228,7 +210,14 @@
         }
       },
       onSubmit(){
-
+        this.curd.postArticle(this.createForm)
+          .then(response => {
+            this.tools.success(this, "文件添加成功");
+            this.fetchData({cate_id : this.createForm.cate_id});
+          })
+          .catch(err => {
+            this.tools.error(this, err.response.data);
+          });
       }
     },
     mounted() {

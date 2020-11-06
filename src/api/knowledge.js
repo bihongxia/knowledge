@@ -39,11 +39,11 @@ export function postFile(data) {
 }
 
 //创建文章
-export function postArticle(params) {
+export function postArticle(data) {
   return request({
     url: '/article/create',
     method: 'post',
-    params
+    data
   })
 }
 

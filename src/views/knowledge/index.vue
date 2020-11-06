@@ -168,8 +168,7 @@
             this.fetchData({cate_id : this.form.cate_id});
           })
           .catch(err => {
-            console.log( err);
-            //this.tools.error(this, err.response.data);
+            this.tools.error(this, err.response.data);
           });
       },
       createDoc(){

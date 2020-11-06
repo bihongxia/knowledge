@@ -16,9 +16,11 @@
   import { uploadFile,fileDelete } from "@/api/knowledge"
   export default {
       name: "attachUpload",
+      props: {
+          fileList: Array,
+      },
       data(){
         return{
-          fileList: [],
           curd:{
             uploadFile: uploadFile || function () {},
             fileDelete: fileDelete || function () {}
