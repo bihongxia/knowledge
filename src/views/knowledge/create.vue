@@ -108,7 +108,7 @@
   import knowledgeBar from '@/views/components/knowledgeBar';
   import attachUpload from '@/views/components/attachUpload';
   import { Tools } from "@/views/utils/Tools";
-  import { getCateList, fileDelete, postArticle } from "@/api/knowledge"
+  import { getCateList, fileDelete, postArticle, getAuth } from "@/api/knowledge"
 
   export default {
     components: { Tinymce, myUpload, knowledgeBar, attachUpload },
@@ -119,6 +119,10 @@
         .then(response => {
           this.cates = response.data;
         })
+      this.curd.getAuth()
+        .then(response => {
+          this.states = response.data;
+        })
     },
     data() {
       return {
@@ -127,6 +131,7 @@
           getCateList: getCateList || function () {},
           fileDelete: fileDelete || function () {},
           postArticle: postArticle || function () {},
+          getAuth: getAuth || function () {},
         },
         departments: [], //部门
         cates: [], //文档分类
@@ -158,23 +163,7 @@
         loading: false,
         size: '',
         show: false,  //剪切框显示和隐藏的flag
-        states: ["Alabama", "Alaska", "Arizona",
-          "Arkansas", "California", "Colorado",
-          "Connecticut", "Delaware", "Florida",
-          "Georgia", "Hawaii", "Idaho", "Illinois",
-          "Indiana", "Iowa", "Kansas", "Kentucky",
-          "Louisiana", "Maine", "Maryland",
-          "Massachusetts", "Michigan", "Minnesota",
-          "Mississippi", "Missouri", "Montana",
-          "Nebraska", "Nevada", "New Hampshire",
-          "New Jersey", "New Mexico", "New York",
-          "North Carolina", "North Dakota", "Ohio",
-          "Oklahoma", "Oregon", "Pennsylvania",
-          "Rhode Island", "South Carolina",
-          "South Dakota", "Tennessee", "Texas",
-          "Utah", "Vermont", "Virginia",
-          "Washington", "West Virginia", "Wisconsin",
-          "Wyoming"]
+        states: []
       }
     },
     methods:{

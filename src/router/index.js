@@ -65,7 +65,7 @@ export const constantRoutes = [
         name: 'createDocument',
         component: () => import('@/views/knowledge/create'),
         meta: { title: '知识库新增', icon: 'dashboard' }
-      }
+      },
     ]
   },
 

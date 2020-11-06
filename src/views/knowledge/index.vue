@@ -38,9 +38,11 @@
                 <i class="el-icon-folder"></i>
                 <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
               </div>
-              <div  style="cursor: pointer" @click="findDoc(scope.row.id)" v-else>
-                <i class="el-icon-document"></i>
-                <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
+              <div  style="cursor: pointer" v-else>
+                <router-link :to="'knowledge/article?id='+scope.row.id">
+                  <i class="el-icon-document"></i>
+                  <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
+                </router-link>
               </div>
 
             </template>
@@ -103,7 +105,7 @@
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import { getList,getHotTitles, postFile, checkArticle } from "@/api/knowledge";
+  import { getList, getHotTitles, postFile, checkArticle } from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
@@ -181,8 +183,7 @@
                   this.tools.success(this, "复核成功");
                   this.fetchData({cate_id : this.form.cate_id});
         })
-      }
-
+      },
     }
   };
 </script>

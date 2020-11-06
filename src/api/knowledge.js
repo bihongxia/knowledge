@@ -90,6 +90,14 @@ export function findArticle(params = {}) {
   })
 }
 
+export function getAuth(params = {}) {
+  return request({
+    url: '/auth/all',
+    method: 'get',
+  })
+}
+
+
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return request({
     url: baseUrl,
@@ -111,6 +119,7 @@ export function getInfoById (id) {
     method: 'get',
   })
 }
+
 
 export function updateInfo (id, data) {
 
