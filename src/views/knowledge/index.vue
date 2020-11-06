@@ -124,6 +124,7 @@
           addFile: postFile || function () {},
           checkArticle: checkArticle || function () {},
         },
+        tools: Tools,
         form: {
           type : 1,
           cate_id : 0,
@@ -145,12 +146,17 @@
             this.tableData = response.data;
           })
       },
+
       goBack(){
 
       },
       goFoward(){
 
       },
+      cancel(){
+        this.createDialogVisible = false;
+      },
+
       createFolder(){
         this.createDialogVisible = true;
       },
@@ -162,7 +168,8 @@
             this.fetchData({cate_id : this.form.cate_id});
           })
           .catch(err => {
-            this.tools.error(this, err.response.data);
+            console.log( err);
+            //this.tools.error(this, err.response.data);
           });
       },
       createDoc(){
@@ -174,7 +181,7 @@
                 .then(response => {
                   this.tools.success(this, "复核成功");
                   this.fetchData({cate_id : this.form.cate_id});
-                })
+        })
       }
 
     }
