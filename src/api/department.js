@@ -7,3 +7,10 @@ export function list(data) {
     data
   })
 }
+export function getUsers(data) {
+  return request({
+    url: '/department/getUser',
+    method: 'post',
+    data
+  })
+}
