@@ -20,7 +20,7 @@ export function getCateList() {
 
 export function getHotTitles(params = {}) {
   return request({
-    url: '/dir/search',
+    url: '/article/search',
     method: 'get',
     params: {
       keywords: params.keywords,
@@ -59,6 +59,18 @@ export function checkArticle(params = {}) {
   return request({
     url: '/dir/check',
     method: 'get',
+  })
+}
+
+//上传附件
+export function uploadFile(data) {
+  return request({
+    url: '/dir/upload/',
+    method: 'post',
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 
