@@ -55,10 +55,11 @@ export function getCateAndDepat(params = {}) {
 }
 
 //审核
-export function checkArticle(params = {}) {
+export function checkArticle(data = {}) {
   return request({
-    url: '/dir/check',
-    method: 'get',
+    url: '/article/approval',
+    method: 'post',
+    data
   })
 }
 
@@ -94,6 +95,14 @@ export function findArticle( params = {}) {
 export function getAuth(params = {}) {
   return request({
     url: '/auth/all',
+    method: 'get',
+  })
+}
+
+//下载
+export function download(params = {}) {
+  return request({
+    url: '/article/download',
     method: 'get',
   })
 }

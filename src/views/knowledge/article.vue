@@ -13,9 +13,9 @@
       <div class="right">
         <h4>文章附件</h4>
         <div v-for="item in article.file_list">
-          <span>{{item.file_name}}</span>
+          <span>{{item.real_name}}</span>
           <span>{{item.size}}</span>
-          <i class="el-icon-download" size="mini"><a :href="item.path"></a></i>
+          <i class="el-icon-download" size="mini" @click="download(item.file_name)"></i>
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import { findArticle } from "@/api/knowledge";
+  import { findArticle, download } from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
@@ -44,6 +44,7 @@
         article: [],
         curd: {
           findArticle: findArticle || function () {},
+          download: download || function () {},
         },
       }
     },
@@ -61,6 +62,12 @@
             this.tableData = response.data;
           })
       },
+      download(file){
+        this.curd.download({'file_name': file})
+          .then(res => {
+
+          })
+      }
     }
   };
 </script>

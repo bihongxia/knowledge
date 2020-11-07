@@ -67,8 +67,8 @@
           </el-table-column>
           <el-table-column label="审核状态" width="120" >
             <template slot-scope="scope" v-if="!scope.row.is_dir">
-              <i class="el-icon-success" v-if="scope.row.status=='1'"></i>
-              <i class="el-icon-time" v-else @click="check(scope.row.id)"></i>
+              <i class="el-icon-success" v-if="scope.row.status=='3'" ></i>
+              <i class="el-icon-time" v-else  @click="check(scope.row.id)"></i>
             </template>
           </el-table-column>
         </el-table>
@@ -178,7 +178,7 @@
       },
       //复核
       check(id) {
-        this.curd.checkArticle(id)
+        this.curd.checkArticle({'id': id})
           .then(response => {
             this.tools.success(this, "复核成功");
             this.fetchData({cate_id : this.form.cate_id});
