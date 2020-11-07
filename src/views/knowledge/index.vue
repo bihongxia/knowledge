@@ -57,7 +57,7 @@
           </el-table-column>
           <el-table-column label="作者">
             <template slot-scope="scope">
-              <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.create_user }}</span>
+              <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.author }}</span>
             </template>
           </el-table-column>
           <el-table-column label="复核人">

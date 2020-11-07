@@ -6,16 +6,18 @@
         <h2 class="title">{{article.title}}</h2>
         <div style="text-align: center">
           <span>作者：{{article.author}}</span>
-          <span>创建时间：{{article.author}}</span>
+          <span>创建时间：{{article.created_at}}</span>
         </div>
         <div v-html="article.content"></div>
       </div>
       <div class="right">
-        <h4>文章附件</h4>
-        <div v-for="item in article.file_list">
-          <span>{{item.real_name}}</span>
-          <span>{{item.size}}</span>
-          <i class="el-icon-download" size="mini" @click="download(item.file_name)"></i>
+        <h4>文章附件  <i class="el-icon-link" size="mini" ></i></h4>
+        <hr style="border:1px solid #f2f2f2">
+        <div v-for="item in article.file_list" style="margin-top: 30px">
+          <span style="margin-right:30px; display:inline-block;width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{item.real_name}}</span>
+          <span style="display: inline-block;margin-right: 30px;">{{item.size}}M</span>
+          <a :href="item.path" :download="item.real_name" target="_blank" style="margin-right: 30px;"><i class="el-icon-download" size="mini" ></i></a>
+          <i class="el-icon-view" size="mini" ></i>
         </div>
       </div>
     </div>
@@ -65,7 +67,7 @@
       download(file){
         this.curd.download({'file_name': file})
           .then(res => {
-
+              return res;
           })
       }
     }

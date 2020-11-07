@@ -104,6 +104,7 @@ export function download(params = {}) {
   return request({
     url: '/article/download',
     method: 'get',
+    params
   })
 }
 
