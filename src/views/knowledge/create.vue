@@ -121,8 +121,17 @@
         })
       this.curd.getAuth()
         .then(response => {
-          this.states = response.data;
+          let states = [];
+          let list = [];
+          for(let i in response.data){
+            let item = response.data[i].userid;
+            states[i] = response.data[i].userid;
+            list[i] = {value: `value:${item}`, label: `name:${item}`}
+          }
+          this.states = states;
+          this.list = list;
         })
+
     },
     data() {
       return {
@@ -206,11 +215,6 @@
             this.tools.error(this, err.response.data);
           });
       }
-    },
-    mounted() {
-      this.list = this.states.map(item => {
-        return { value: `value:${item}`, label: `label:${item}` };
-      });
     },
 
   };

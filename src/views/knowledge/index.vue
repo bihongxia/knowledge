@@ -179,9 +179,9 @@
       //复核
       check(id) {
         this.curd.checkArticle(id)
-                .then(response => {
-                  this.tools.success(this, "复核成功");
-                  this.fetchData({cate_id : this.form.cate_id});
+          .then(response => {
+            this.tools.success(this, "复核成功");
+            this.fetchData({cate_id : this.form.cate_id});
         })
       },
     }
