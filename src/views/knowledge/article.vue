@@ -1,11 +1,24 @@
 <template>
   <el-container >
     <knowledge-bar></knowledge-bar>
-    <el-container>
-      <div>
-        
+    <div class="container">
+      <div class="left">
+        <h2 class="title">{{article.title}}</h2>
+        <div style="text-align: center">
+          <span>作者：{{article.author}}</span>
+          <span>创建时间：{{article.author}}</span>
+        </div>
+        <div v-html="article.content"></div>
       </div>
-    </el-container>
+      <div class="right">
+        <h4>文章附件</h4>
+        <div v-for="item in article.file_list">
+          <span>{{item.file_name}}</span>
+          <span>{{item.size}}</span>
+          <i class="el-icon-download" size="mini"><a :href="item.path"></a></i>
+        </div>
+      </div>
+    </div>
   </el-container>
 </template>
 
@@ -20,13 +33,14 @@
     mixins: [CURD],
     //数据获取
     created() {
-      this.curd.findArticle()
+      this.curd.findArticle(this.$route.params)
         .then(res => {
            this.article = res.data;
         })
     },
     data() {
       return {
+        tools: Tools,
         article: [],
         curd: {
           findArticle: findArticle || function () {},
@@ -51,28 +65,28 @@
   };
 </script>
 <style scoped>
-  .el-header {
-    color: #333;
-    border-bottom:2px solid #ccc;
-  }
-  .h-title{
-    height:60px;
-    line-height: 60px;
-    border-bottom: 1px solid #ccc;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  .char-margin{
-    margin: 14px;
-  }
-  .btn-margin{
-    margin: 8px;
-  }
-  .divide{
-    color: #ccc;
+  .title{
+    width: 100%;
+    height:50px;
+    line-height: 50px;
     text-align: center;
   }
-  .light-color{
-    color: #acacac;
+  .left{
+    float: left;
+    width: 1000px;
+    height: 100%;
+    padding:20px 30px;
+    background-color: #f6f7f9;
+  }
+  .right{
+    padding:30px;
+    overflow:hidden;
+    border-radius: 30px;
+    background: #fff;
+    height:900px;
+  }
+  .container{
+    width:100%;
+    background: #f6f7f9
   }
 </style>

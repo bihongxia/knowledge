@@ -45,7 +45,8 @@
               this.fileList.push(
                 {
                   name:response.data.storage.split('/').reverse()[0],
-                  url:response.data.url
+                  url:response.data.url,
+                  fid:response.data.fid
                 }
               );
             })
