@@ -11,7 +11,7 @@
     <el-menu>
       <template slot="">
         <el-menu-item @click="getFileList(0)"><i class="el-icon-user"></i>我的文件</el-menu-item>
-        <el-menu-item @click="getFileList(-1)"><i class="el-icon-time"></i>最近浏览</el-menu-item>
+        <el-menu-item @click="getLatelyAll"><i class="el-icon-time"></i>最近浏览</el-menu-item>
       </template>
       <el-submenu index="">
         <template slot="title">文档分类</template>
@@ -49,6 +49,9 @@
         }
       },
       methods: {
+        getLatelyAll(){
+          this.$emit("getLatelyAll");
+        },
         getFileList(cate_id){
           this.$emit("getList", cate_id);
         },

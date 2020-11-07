@@ -1,6 +1,6 @@
 <template>
   <el-container >
-    <knowledge-bar @getList="getList" @dirSearch="dirSearch"></knowledge-bar>
+    <knowledge-bar @getList="getList" @dirSearch="dirSearch" @getLatelyAll="getLatelyAll"></knowledge-bar>
     <el-container>
       <el-header style="height: 110px;">
         <div class="h-title">
@@ -36,12 +36,12 @@
             <template slot-scope="scope">
               <div  style="cursor: pointer" v-if="scope.row.is_dir==1" @click="getList(scope.row.cate_id,scope.row.id)">
                 <i class="el-icon-folder"></i>
-                <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
+                <span style="margin-left: 10px;">{{ scope.row.title }}</span>
               </div>
               <div  style="cursor: pointer" v-else>
                 <router-link :to="'knowledge/article/'+scope.row.id">
                   <i class="el-icon-document"></i>
-                  <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
+                  <span style="margin-left: 10px;">{{ scope.row.title }}</span>
                 </router-link>
               </div>
 
@@ -50,7 +50,7 @@
           <el-table-column label="最近更新">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
-              <span style="margin-left: 10px">{{ scope.row.updated_at }}</span>
+              <span style="margin-left: 10px">{{ scope.row.created_at }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="updated_user" label="更新者">
@@ -105,7 +105,7 @@
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import { getList, getHotTitles, postFile, checkArticle } from "@/api/knowledge";
+  import { getList, getHotTitles, postFile, checkArticle, getLatelyAll} from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
@@ -125,6 +125,7 @@
           getHotTitles: getHotTitles || function () {},
           addFile: postFile || function () {},
           checkArticle: checkArticle || function () {},
+          getLatelyAll: getLatelyAll || function () {},
         },
         tools: Tools,
         form: {
@@ -146,6 +147,15 @@
           .then(response => {
             //成功执行内容
             this.tableData = response.data;
+          })
+      },
+      getLatelyAll(){
+        this.curd.getLatelyAll().
+          then(res => {
+            let result = res.data;
+            this.tableData = result;
+          }).catch(err => {
+            this.tools.error(this, err.response.data);
           })
       },
 

@@ -107,6 +107,14 @@ export function download(params = {}) {
   })
 }
 
+//获取最近浏览
+export function getLatelyAll(){
+  return request({
+    url: '/lately/all',
+    method: 'post',
+  })
+}
+
 
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return request({
