@@ -31,7 +31,7 @@ export function del(data) {
 // 获取select option
 export function getRoleOption(data) {
   return request({
-    url: '/admin/role/getRoleOption',
+    url: '/role/getRoleOption',
     method: 'post',
     data
   })
