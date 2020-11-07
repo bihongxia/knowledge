@@ -38,7 +38,7 @@ module.exports = {
       errors: true
     },
     proxy: {
-      '/api': {
+      '/web': {
         target: process.env.VUE_APP_SERVER_HOST,
         changeOrigin: true
       }

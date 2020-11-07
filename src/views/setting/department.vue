@@ -187,7 +187,7 @@ export default {
     },
     assign(data) {
       this.dialogFormVisible = true
-      this.listLoading = false
+      this.listLoading = true
       getUsers(data).then(response => {
         this.listLoading = false
         this.tableData = response.data
