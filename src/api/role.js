@@ -2,14 +2,14 @@ import request from '@/utils/request'
 
 export function store(data) {
   return request({
-    url: '/admin/role/store',
+    url: '/role/store',
     method: 'post',
     data
   })
 }
 export function getRolelist(data) {
   return request({
-    url: '/admin/role/list',
+    url: '/role/list',
     method: 'post',
     data
   })
