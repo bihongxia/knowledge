@@ -39,7 +39,7 @@
                 <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
               </div>
               <div  style="cursor: pointer" v-else>
-                <router-link :to="'knowledge/article?id='+scope.row.id">
+                <router-link :to="'knowledge/article/'+scope.row.id">
                   <i class="el-icon-document"></i>
                   <span style="margin-left: 10px;">{{ scope.row.filename }}</span>
                 </router-link>

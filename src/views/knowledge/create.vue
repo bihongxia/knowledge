@@ -148,6 +148,7 @@
         search: '',
         //上传附件相关
         createForm: {
+          type: 2,
           title:'',
           create_user: '',
           created_at: '',
@@ -173,6 +174,19 @@
       }
     },
     methods:{
+      getList(cate_id, fid) {
+        this.fetchData({cate_id : cate_id, fid: fid});
+        this.form.cate_id = cate_id;
+      },
+      dirSearch(filename){
+        //向后台发送请求获取数据；
+        let params = { keywords: filename };
+        this.curd.getHotTitles(params)
+          .then(response => {
+            //成功执行内容
+            this.tableData = response.data;
+          })
+      },
       //控制剪切框的显示和隐藏
       toggleShow() {
         this.createForm.show = !this.createForm.show;
@@ -216,6 +230,7 @@
           });
       }
     },
+
 
   };
 </script>

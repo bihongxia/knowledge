@@ -85,8 +85,9 @@ export function fileDelete(params = {}) {
 //展示文章
 export function findArticle( params = {}) {
   return request({
-    url: '/article/check',
+    url: '/article/detail',
     method: 'get',
+    params
   })
 }
 

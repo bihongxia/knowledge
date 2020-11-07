@@ -1,9 +1,9 @@
 <template>
   <el-container >
-    <knowledge-bar @getList="getList" @dirSearch="dirSearch"></knowledge-bar>
+    <knowledge-bar></knowledge-bar>
     <el-container>
       <div>
-
+        
       </div>
     </el-container>
   </el-container>
@@ -16,7 +16,6 @@
   import { Tools } from "@/views/utils/Tools"
 
   export default {
-    name: article,
     components: { knowledgeBar },
     mixins: [CURD],
     //数据获取
@@ -35,6 +34,19 @@
       }
     },
     methods:{
+      getList(cate_id, fid) {
+        this.fetchData({cate_id : cate_id, fid: fid});
+        this.form.cate_id = cate_id;
+      },
+      dirSearch(filename){
+        //向后台发送请求获取数据；
+        let params = { keywords: filename };
+        this.curd.getHotTitles(params)
+          .then(response => {
+            //成功执行内容
+            this.tableData = response.data;
+          })
+      },
     }
   };
 </script>
