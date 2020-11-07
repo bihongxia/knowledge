@@ -40,6 +40,11 @@
           width="180"
         />
         <el-table-column
+          prop="admin_name"
+          label="操作人"
+          width="180"
+        />
+        <el-table-column
           prop="created_at"
           label="操作时间"
           width="180"
