@@ -17,7 +17,6 @@
           <el-form-item>
             <el-button
               type="primary"
-              @click="onSearch"
             >查询</el-button>
           </el-form-item>
           <el-form-item>
@@ -71,14 +70,23 @@
           width="180"
         />
       </el-table>
+      <!-- <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="getList"
+      /> -->
     </el-card>
   </div></template>
 
 <script>
 import { getLogsList } from '@/api/logs'
+// import Pagination from '@/components/Pagination'
 
 export default {
   name: 'Logs',
+  // components: Pagination,
   data() {
     return {
       formInline: {
@@ -86,7 +94,11 @@ export default {
       },
       dialogFormVisible: false,
       listLoading: true,
-      list: null
+      list: null,
+      listQuery: {
+        page: 1,
+        limit: 10
+      }
     }
   },
   onSearch() {
@@ -100,9 +112,9 @@ export default {
     getList() {
       this.listLoading = true
       getLogsList(this.listQuery).then(response => {
-        console.log(response)
-        this.list = response.data
-        this.total = response.total
+        // console.log(response)
+        this.list = response.data.list
+        // this.total = response.data.total
         this.listLoading = false
       })
     }
