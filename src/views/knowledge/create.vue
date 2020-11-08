@@ -1,6 +1,6 @@
 <template>
   <el-container >
-    <knowledge-bar></knowledge-bar>
+    <knowledge-bar @getList="getList" @dirSearch="dirSearch" @getLatelyAll="getLatelyAll"></knowledge-bar>
     <el-container>
       <el-header>
         <div class="h-title">新增文档</div>
@@ -47,7 +47,7 @@
           </el-form-item>
           <el-form-item label="标题图片">
             <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
-            <my-upload field="img" @crop-success="cropSuccess" v-model="createForm.image" :width="100" :height="100" img-format="jpg" :size="size" v-show="show"></my-upload>
+            <my-upload field="img" @crop-success="cropSuccess" v-model="show" :width="100" :height="100" img-format="jpg" :size="size"></my-upload>
             <img :src="createForm.avatar">
           </el-form-item>
           <el-form-item label="权限设置">
@@ -108,7 +108,8 @@
   import knowledgeBar from '@/views/components/knowledgeBar';
   import attachUpload from '@/views/components/attachUpload';
   import { Tools } from "@/views/utils/Tools";
-  import { getCateList, fileDelete, postArticle, getAuth } from "@/api/knowledge"
+  import CURD from '@/minix/curd';
+  import { getList, getCateList, getLatelyAll, fileDelete, postArticle, getAuth } from "@/api/knowledge"
 
   export default {
     components: { Tinymce, myUpload, knowledgeBar, attachUpload },
@@ -131,16 +132,18 @@
           this.states = states;
           this.list = list;
         })
-
     },
     data() {
       return {
         tools: Tools,
+        mixins: [CURD],
         curd:{
           getCateList: getCateList || function () {},
           fileDelete: fileDelete || function () {},
           postArticle: postArticle || function () {},
           getAuth: getAuth || function () {},
+          getList: getList || function () {},
+          getLatelyAll: getLatelyAll || function () {},
         },
         departments: [], //部门
         cates: [], //文档分类
@@ -175,6 +178,14 @@
     },
     methods:{
       getList(cate_id, fid) {
+        this.$router.push({
+          name:'/knowledge',
+          query: {
+            cate_id: cate_id,
+            fid: fid,
+            type:1
+          }
+        })
         this.fetchData({cate_id : cate_id, fid: fid});
         this.form.cate_id = cate_id;
       },
@@ -182,14 +193,29 @@
         //向后台发送请求获取数据；
         let params = { keywords: filename };
         this.curd.getHotTitles(params)
-          .then(response => {
-            //成功执行内容
-            this.tableData = response.data;
-          })
+                .then(response => {
+                  //成功执行内容
+                  this.tableData = response.data;
+                })
+      },
+      getLatelyAll(){
+        this.$router.push({
+          name:'/knowledge',
+          query: {
+            type:0
+          }
+        })
+        this.curd.getLatelyAll().
+        then(res => {
+          let result = res.data;
+          this.tableData = result;
+        }).catch(err => {
+          this.tools.error(this, err.response.data);
+        })
       },
       //控制剪切框的显示和隐藏
       toggleShow() {
-        this.createForm.show = !this.createForm.show;
+        this.show = !this.show;
       },
       //剪切成功后的回调函数
       cropSuccess(imgDataUrl) {

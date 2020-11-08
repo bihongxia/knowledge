@@ -8,10 +8,10 @@
         </div>
         <el-row class="todo-title">
             <el-col :span="1">
-              <i class="el-icon-back char-margin" @back="goBack"></i>
+              <i class="el-icon-back char-margin" @click="goBack"></i>
             </el-col>
             <el-col :span="1">
-              <i class="el-icon-right char-margin" @back="goBack"></i>
+              <i class="el-icon-right char-margin" @click="goFoward"></i>
             </el-col>
             <el-col :span="1">
               <div class="char-margin divide">|</div>
@@ -77,7 +77,14 @@
           <el-col :span="2" :offset="1">
           </el-col>
           <el-col :span="20">
-            <el-pagination background @current-change="pagination" @size-change="sizeChange" :current-page.sync="current_page" :page-sizes="[10,20,25,50]" layout="total,sizes,prev, pager, next" :page-size.sync="pageSize" :total="total">
+            <el-pagination background
+                           @current-change="pagination"
+                           @size-change="sizeChange"
+                           :current-page.sync="current_page"
+                           :page-sizes="[10,20,25,50]"
+                           layout="total,sizes,prev, pager, next"
+                           :page-size.sync="pageSize"
+                           :total="total">
             </el-pagination>
           </el-col>
         </el-row>
@@ -137,6 +144,14 @@
     },
     methods:{
       getList(cate_id, fid) {
+        this.$router.push({
+          name:'/knowledge',
+          query: {
+            cate_id: cate_id,
+            fid: fid,
+            type:1
+          }
+        })
         this.fetchData({cate_id : cate_id, fid: fid});
         this.form.cate_id = cate_id;
       },
@@ -150,6 +165,12 @@
           })
       },
       getLatelyAll(){
+        this.$router.push({
+          name:'/knowledge',
+          query: {
+            type:0
+          }
+        })
         this.curd.getLatelyAll().
           then(res => {
             let result = res.data;
@@ -160,10 +181,10 @@
       },
 
       goBack(){
-
+        this.$router.back();
       },
       goFoward(){
-
+        this.$router.go(1);
       },
       cancel(){
         this.createDialogVisible = false;

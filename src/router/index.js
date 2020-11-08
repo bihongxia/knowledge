@@ -58,13 +58,15 @@ export const constantRoutes = [
         path: 'knowledge',
         name: 'Knowledge',
         component: () => import('@/views/knowledge/index'),
-        meta: { title: '知识库列表', icon: 'dashboard' }
+        meta: { title: '知识库列表', icon: 'dashboard' },
+        hidden:true
       },
       {
         path: 'knowledge/create',
         name: 'createDocument',
         component: () => import('@/views/knowledge/create'),
-        meta: { title: '知识库新增', icon: 'dashboard' }
+        meta: { title: '知识库新增', icon: 'dashboard' },
+        hidden:true
       },
       {
         path: 'knowledge/article/:id(\\d+)',
