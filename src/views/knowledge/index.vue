@@ -34,7 +34,7 @@
         <el-table :data="tableData" v-loading="loading">
           <el-table-column label="名称">
             <template slot-scope="scope">
-              <div  style="cursor: pointer" v-if="scope.row.is_dir==1" @click="getList(scope.row.cate_id,scope.row.id)">
+              <div  style="cursor: pointer" v-if="scope.row.is_dir==1" @click="getList(scope.row.category_id,scope.row.id)">
                 <i class="el-icon-folder"></i>
                 <span style="margin-left: 10px;">{{ scope.row.title }}</span>
               </div>
@@ -253,7 +253,13 @@
           });
       },
       createDoc(){
-        this.$router.replace('/knowledge/create');
+        //this.$router.replace('/knowledge/create');
+        this.$router.push({
+          path:'/knowledge/create',
+          query: {
+            aid: this.$route.query.fid
+          }
+        })
       },
       //复核
       check(id) {

@@ -168,6 +168,7 @@
             todo: '1',
             names: ''
           },
+          pid: this.$route.query.aid
         },
         authDialog: false,
         options: [],
@@ -179,37 +180,6 @@
         states: []
       }
     },
-    // watch: {
-    //   $route: {
-    //     handler(){
-    //       let type = this.$route.query.type ? this.$route.query.type : 1;
-    //       let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0;
-    //       let fid = this.$route.query.fid;
-    //       let keywords = this.$route.query.keywords;
-    //       //非最近浏览
-    //       if(type==1){
-    //         this.fetchData({cate_id : cate_id, fid: fid});
-    //         this.form.cate_id = cate_id;
-    //         //最近浏览
-    //       }else if (type==0){
-    //         this.curd.getLatelyAll().
-    //         then(res => {
-    //           this.tableData = res.data;
-    //         }).catch(err => {
-    //           this.tools.error(this, err.response.data);
-    //         })
-    //       }else if(type ==2) {
-    //         //向后台发送请求获取数据；
-    //         let params = { keywords: keywords };
-    //         this.curd.getHotTitles(params)
-    //           .then(response => {
-    //             //成功执行内容
-    //             this.tableData = response.data;
-    //           })
-    //       }
-    //     }
-    //   }
-    // },
     methods:{
       getList(cate_id, fid) {
         this.$router.push({
@@ -280,7 +250,7 @@
         this.curd.postArticle(this.createForm)
           .then(response => {
             this.tools.success(this, "文件添加成功");
-            this.fetchData({cate_id : this.createForm.cate_id});
+            this.$router.back();
           })
           .catch(err => {
             this.tools.error(this, err.response.data);
