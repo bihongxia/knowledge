@@ -82,7 +82,7 @@
                            @size-change="sizeChange"
                            :current-page.sync="current_page"
                            :page-sizes="[10,20,25,50]"
-                           layout="total,sizes,prev, pager, next"
+                           layout="sizes,prev, pager, next"
                            :page-size.sync="pageSize"
                            :total="total">
             </el-pagination>
