@@ -1,6 +1,6 @@
 <template>
   <el-container >
-    <knowledge-bar></knowledge-bar>
+    <knowledge-bar @getList="getList" @dirSearch="dirSearch" @getLatelyAll="getLatelyAll"></knowledge-bar>
     <el-container>
       <el-header style="height: 110px;">
         <div class="h-title">
@@ -32,30 +32,44 @@
       </el-header>
       <el-main>
         <el-table :data="tableData" v-loading="loading">
-          <el-table-column label="名称" width="140">
+          <el-table-column label="名称">
             <template slot-scope="scope">
-              <div  style="cursor: pointer" @click="findDoc">
-                <i class="el-icon-folder" v-show="scope.row.file_type=='file_folder'" ></i>
-                <i class="el-icon-document" v-show="scope.row.file_type=='file'"></i>
-                <span style="margin-left: 10px;">{{ scope.row.file_name }}</span>
+              <div  style="cursor: pointer" v-if="scope.row.is_dir==1" @click="getList(scope.row.cate_id,scope.row.id)">
+                <i class="el-icon-folder"></i>
+                <span style="margin-left: 10px;">{{ scope.row.title }}</span>
               </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="状态" width="120">
-            <template slot-scope="scope">
-              <i class="el-icon-success" v-if="scope.row.status=='1'"></i>
-              <i class="el-icon-upload" v-else></i>
+              <div  style="cursor: pointer" v-else>
+                <router-link :to="'knowledge/article/'+scope.row.id">
+                  <i class="el-icon-document"></i>
+                  <span style="margin-left: 10px;">{{ scope.row.title }}</span>
+                </router-link>
+              </div>
+
             </template>
           </el-table-column>
           <el-table-column label="最近更新">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
-              <span style="margin-left: 10px">{{ scope.row.updated_at }}</span>
+              <span style="margin-left: 10px">{{ scope.row.created_at }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="user" label="更新者">
+          <el-table-column prop="updated_user" label="更新者">
           </el-table-column>
-          <el-table-column prop="file_size" label="大小">
+          <el-table-column label="作者">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.author }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="复核人">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px" v-show="!scope.row.is_dir">{{ scope.row.review_user }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="审核状态" width="120" >
+            <template slot-scope="scope" v-if="!scope.row.is_dir">
+              <i class="el-icon-success" v-if="scope.row.status=='3'" ></i>
+              <i class="el-icon-time" v-else  @click="check(scope.row.id)"></i>
+            </template>
           </el-table-column>
         </el-table>
         <!-- 分页 -->
@@ -69,13 +83,29 @@
         </el-row>
       </el-main>
     </el-container>
+    <el-dialog title="新建文件夹" :visible.sync="createDialogVisible" width="20%" :close-on-click-modal="false" @close="cancel();return true;">
+      <el-form :model="form" label-width="80px">
+        <el-row class="first-row">
+          <el-col :span="21" class="first-column" >
+            <el-form-item label="文件夹">
+              <el-input v-model="form.name"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="saveFile()" size="">确 定</el-button>
+        <el-button @click="cancel()">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </el-container>
 </template>
 
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
-  import { getList } from "@/api/knowledge";
+  import { getList, getHotTitles, postFile, checkArticle, getLatelyAll} from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
@@ -84,58 +114,86 @@
     mixins: [CURD],
     //数据获取
     created() {
-      this.fetchData(0);
+      this.fetchData({cate_id : 0});
     },
     data() {
-      const tableData = [
-        {
-          file_name: '文件夹',
-          file_type: 'file_folder',
-          status: '1',
-          updated_at: '2020-10-20',
-          user: '毕宏霞',
-          file_size: '3M',
-        },
-        {
-          file_name: '文档',
-          file_type: 'file',
-          status: '0',
-          updated_at: '2020-10-20',
-          user: '毕宏霞',
-          file_size: '3M',
-        }
-      ];
       return {
-        tableData: tableData,
+        tableData: [],
+        createDialogVisible: false,
         curd: {
           getList: getList || function () {},
+          getHotTitles: getHotTitles || function () {},
+          addFile: postFile || function () {},
+          checkArticle: checkArticle || function () {},
+          getLatelyAll: getLatelyAll || function () {},
+        },
+        tools: Tools,
+        form: {
+          type : 1,
+          cate_id : 0,
+          name : '',
         }
       }
     },
     methods:{
+      getList(cate_id, fid) {
+        this.fetchData({cate_id : cate_id, fid: fid});
+        this.form.cate_id = cate_id;
+      },
+      dirSearch(filename){
+        //向后台发送请求获取数据；
+        let params = { keywords: filename };
+        this.curd.getHotTitles(params)
+          .then(response => {
+            //成功执行内容
+            this.tableData = response.data;
+          })
+      },
+      getLatelyAll(){
+        this.curd.getLatelyAll().
+          then(res => {
+            let result = res.data;
+            this.tableData = result;
+          }).catch(err => {
+            this.tools.error(this, err.response.data);
+          })
+      },
+
       goBack(){
 
       },
       goFoward(){
 
       },
+      cancel(){
+        this.createDialogVisible = false;
+      },
+
       createFolder(){
-        this.tableData.unshift({
-          file_name: '',
-          file_type: 'file_folder',
-          status: '0',
-          updated_at: '刚刚',
-          user: '毕宏霞',
-          file_size: '--',
-        });
+        this.createDialogVisible = true;
+      },
+      saveFile(){
+        this.createDialogVisible = false;
+        this.curd.addFile(this.form)
+          .then(response => {
+            this.tools.success(this, "文件夹添加成功");
+            this.fetchData({cate_id : this.form.cate_id});
+          })
+          .catch(err => {
+            this.tools.error(this, err.response.data);
+          });
       },
       createDoc(){
         this.$router.replace('/knowledge/create');
       },
-      findDoc(){
-        //向后台发送请求获取数据；
-        this.tableData = [];
-      }
+      //复核
+      check(id) {
+        this.curd.checkArticle({'id': id})
+          .then(response => {
+            this.tools.success(this, "复核成功");
+            this.fetchData({cate_id : this.form.cate_id});
+        })
+      },
     }
   };
 </script>

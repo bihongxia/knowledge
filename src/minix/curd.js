@@ -29,7 +29,7 @@ let CURD = {
           this.loading = false;
         })
         .catch(err => {
-          this.tools.error(this, err.response.data);
+          // this.tools.error(this, err.response.data);
           this.loading = false;
         });
     },

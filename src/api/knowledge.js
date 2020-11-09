@@ -1,9 +1,13 @@
 import request from '@/utils/request'
 
-export function getList(id) {
+export function getList(params = {}) {
   return request({
-    url: '/dir/list?cate='+id,
+    url: '/article/dir',
     method: 'get',
+    params: {
+      cate_id: params.cate_id,
+      aid: params.fid
+    }
   })
 }
 
@@ -13,6 +17,105 @@ export function getCateList() {
     method: 'get'
   })
 }
+
+export function getHotTitles(params = {}) {
+  return request({
+    url: '/article/search',
+    method: 'get',
+    params: {
+      keywords: params.keywords,
+      type: params.type
+    }
+  })
+}
+
+//创建文件夹
+export function postFile(data) {
+  return request({
+    url: '/article/create',
+    method: 'post',
+    data
+  })
+}
+
+//创建文章
+export function postArticle(data) {
+  return request({
+    url: '/article/create',
+    method: 'post',
+    data
+  })
+}
+
+export function getCateAndDepat(params = {}) {
+  return request({
+    url: '/dir/search',
+    method: 'get',
+  })
+}
+
+//审核
+export function checkArticle(data = {}) {
+  return request({
+    url: '/article/approval',
+    method: 'post',
+    data
+  })
+}
+
+//上传附件
+export function uploadFile(data) {
+  return request({
+    url: '/dir/upload/',
+    method: 'post',
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+//删除附件
+export function fileDelete(params = {}) {
+  return request({
+    url: '/dir/check',
+    method: 'get',
+  })
+}
+
+//展示文章
+export function findArticle( params = {}) {
+  return request({
+    url: '/article/detail',
+    method: 'get',
+    params
+  })
+}
+
+export function getAuth(params = {}) {
+  return request({
+    url: '/auth/all',
+    method: 'get',
+  })
+}
+
+//下载
+export function download(params = {}) {
+  return request({
+    url: '/article/download',
+    method: 'get',
+    params
+  })
+}
+
+//获取最近浏览
+export function getLatelyAll(){
+  return request({
+    url: '/lately/all',
+    method: 'post',
+  })
+}
+
 
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return request({
@@ -35,6 +138,7 @@ export function getInfoById (id) {
     method: 'get',
   })
 }
+
 
 export function updateInfo (id, data) {
 

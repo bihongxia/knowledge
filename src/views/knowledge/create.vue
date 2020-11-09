@@ -6,72 +6,49 @@
         <div class="h-title">新增文档</div>
       </el-header>
       <el-main>
-        <el-form ref="form" :model="sizeForm" label-width="80px">
+        <el-form ref="form" :model="createForm" label-width="80px">
           <el-form-item label="主题">
-            <el-input v-model="sizeForm.name"></el-input>
+            <el-input v-model="createForm.title"></el-input>
           </el-form-item>
           <el-row>
-            <el-col :span="12">
-              <el-form-item label="创建者">
-                <el-input v-model="sizeForm.name"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="选择时间">
-                <el-date-picker type="date" placeholder="选择时间" v-model="sizeForm.date1" style="width: 100%;"></el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
+            <el-col :span="5">
               <el-form-item label="作者">
-                <el-input v-model="sizeForm.name"></el-input>
+                <el-input v-model="createForm.create_user"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
-              <el-form-item label="部门">
-                <el-select v-model="sizeForm.region" placeholder="请选择活动区域">
-                  <el-option label="区域一" value="shanghai"></el-option>
-                  <el-option label="区域二" value="beijing"></el-option>
+            <el-col :span="5" :offset="2">
+              <el-form-item label="选择时间">
+                <el-date-picker
+                  v-model="createForm.created_at"
+                  type="datetime"
+                  placeholder="发布时间"
+                  default-time="12:00:00">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item label="文档分类">
+                <el-select v-model="createForm.cate_id" placeholder="请选择文档分类">
+                  <el-option v-for="cate in cates" :label="cate.name" :value="cate.id" :key="cate.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="12">
-              <el-form-item label="文档分类">
-                <el-select v-model="sizeForm.region" placeholder="请选择活动区域">
-                  <el-option label="区域一" value="shanghai"></el-option>
-                  <el-option label="区域二" value="beijing"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
           </el-row>
           <el-form-item label="内容简要">
-            <el-input type="textarea" v-model="sizeForm.content"></el-input>
+            <el-input type="textarea" v-model="createForm.desc"></el-input>
             <div>
-              <tinymce v-model="sizeForm.content" :height="300" />
+              <tinymce v-model="createForm.content" :height="300" />
             </div>
           </el-form-item>
           <el-form-item label="文档附件">
-            <el-upload
-              class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
-              multiple
-              :limit="3"
-              :on-exceed="handleExceed"
-              :file-list="sizeForm.fileList">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </el-upload>
+            <attach-upload :fileList="createForm.fileList"></attach-upload>
           </el-form-item>
           <el-form-item label="标题图片">
             <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
-            <my-upload field="img" @crop-success="cropSuccess" v-model="sizeForm.show" :width="400" :height="200" img-format="jpg" :size="size"></my-upload>
-            <img :src="avatar">
+            <my-upload field="img" @crop-success="cropSuccess" v-model="createForm.image" :width="100" :height="100" img-format="jpg" :size="size" v-show="show"></my-upload>
+            <img :src="createForm.avatar">
           </el-form-item>
           <el-form-item label="权限设置">
             <el-button type="primary" plain @click="authDialog = true">权限</el-button>
@@ -83,13 +60,12 @@
             width="30%"
             :before-close="handleClose">
             <el-form-item label="访问权限">
-              <el-radio v-model="sizeForm.radio3" label="1" border size="medium">共享</el-radio>
-              <el-radio v-model="sizeForm.radio3" label="2" border size="medium">私密</el-radio>
-
+              <el-radio v-model="createForm.permissions.visit" label="1" border size="medium">共享</el-radio>
+              <el-radio v-model="createForm.permissions.visit" label="2" border size="medium">私密</el-radio>
               <div>
                 <el-select
-                  v-show="sizeForm.radio3 == '2'"
-                  v-model="value"
+                  v-show="createForm.permissions.visit == '2'"
+                  v-model="createForm.permissions.names"
                   multiple
                   filterable
                   remote
@@ -107,8 +83,8 @@
               </div>
             </el-form-item>
             <el-form-item label="读写权限">
-              <el-radio v-model="sizeForm.radio4" label="1" border size="medium">浏览</el-radio>
-              <el-radio v-model="sizeForm.radio4" label="2" border size="medium">下载</el-radio>
+              <el-radio v-model="createForm.permissions.todo" label="1" border size="medium">浏览</el-radio>
+              <el-radio v-model="createForm.permissions.todo" label="2" border size="medium">下载</el-radio>
             </el-form-item>
             <span slot="footer" class="dialog-footer">
               <el-button @click="authDialog = false">取 消</el-button>
@@ -124,137 +100,104 @@
     </el-container>
   </el-container>
 </template>
-<style>
-  .el-header {
-    color: #333;
-    border-bottom:2px solid #ccc;
-  }
-  .h-title{
-    height:60px;
-    line-height: 60px;
-    border-bottom: 1px solid #ccc;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-
-</style>
 
 <script>
   import Tinymce from '@/components/Tinymce';
   import 'babel-polyfill';
   import myUpload from 'vue-image-crop-upload';
   import knowledgeBar from '@/views/components/knowledgeBar';
-  import { Tools } from "@/views/utils/Tools"
+  import attachUpload from '@/views/components/attachUpload';
+  import { Tools } from "@/views/utils/Tools";
+  import { getCateList, fileDelete, postArticle, getAuth } from "@/api/knowledge"
 
   export default {
-    components: { Tinymce, myUpload,knowledgeBar },
+    components: { Tinymce, myUpload, knowledgeBar, attachUpload },
+    //数据获取
+    created() {
+      //获取分类
+      this.curd.getCateList()
+        .then(response => {
+          this.cates = response.data;
+        })
+      this.curd.getAuth()
+        .then(response => {
+          let states = [];
+          let list = [];
+          for(let i in response.data){
+            let item = response.data[i].userid;
+            states[i] = response.data[i].userid;
+            list[i] = {value: `value:${item}`, label: `name:${item}`}
+          }
+          this.states = states;
+          this.list = list;
+        })
+
+    },
     data() {
-      const tableData = [
-        {
-          file_name: '文件夹',
-          file_type: 'file_folder',
-          status: '1',
-          updated_at: '2020-10-20',
-          user: '毕宏霞',
-          file_size: '3M',
-        },
-        {
-          file_name: '文档',
-          file_type: 'file',
-          status: '0',
-          updated_at: '2020-10-20',
-          user: '毕宏霞',
-          file_size: '3M',
-        }
-      ];
       return {
-        tableData: tableData,
+        tools: Tools,
+        curd:{
+          getCateList: getCateList || function () {},
+          fileDelete: fileDelete || function () {},
+          postArticle: postArticle || function () {},
+          getAuth: getAuth || function () {},
+        },
+        departments: [], //部门
+        cates: [], //文档分类
+        tableData: [],
         search: '',
-        sizeForm: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
+        //上传附件相关
+        createForm: {
+          type: 2,
+          title:'',
+          create_user: '',
+          created_at: '',
+          cate_id:'',
           desc: '',
           content:'',
-          avatar: "",  //用于存储剪切完图片的base64Data和显示回调图片
-          show: false,  //剪切框显示和隐藏的flag
-          size: 2.1,
           fileList: [],
-          radio3: '1',
-          radio4: '1',
-          selectAuth: [],
+          avatar: "",  //用于存储剪切完图片的base64Data和显示回调图片
+          permissions:{
+            visit : '1',
+            todo: '1',
+            names: ''
+          },
         },
         authDialog: false,
         options: [],
         value: [],
         list: [],
         loading: false,
-        states: ["Alabama", "Alaska", "Arizona",
-          "Arkansas", "California", "Colorado",
-          "Connecticut", "Delaware", "Florida",
-          "Georgia", "Hawaii", "Idaho", "Illinois",
-          "Indiana", "Iowa", "Kansas", "Kentucky",
-          "Louisiana", "Maine", "Maryland",
-          "Massachusetts", "Michigan", "Minnesota",
-          "Mississippi", "Missouri", "Montana",
-          "Nebraska", "Nevada", "New Hampshire",
-          "New Jersey", "New Mexico", "New York",
-          "North Carolina", "North Dakota", "Ohio",
-          "Oklahoma", "Oregon", "Pennsylvania",
-          "Rhode Island", "South Carolina",
-          "South Dakota", "Tennessee", "Texas",
-          "Utah", "Vermont", "Virginia",
-          "Washington", "West Virginia", "Wisconsin",
-          "Wyoming"]
+        size: '',
+        show: false,  //剪切框显示和隐藏的flag
+        states: []
       }
     },
     methods:{
-      goBack(){
-
+      getList(cate_id, fid) {
+        this.fetchData({cate_id : cate_id, fid: fid});
+        this.form.cate_id = cate_id;
       },
-      goFoward(){
-
-      },
-      createFolder(){
-        this.tableData.unshift({
-          file_name: '',
-          file_type: 'file_folder',
-          status: '0',
-          updated_at: '刚刚',
-          user: '毕宏霞',
-          file_size: '--',
-        });
-      },
-      createDoc(){
-
+      dirSearch(filename){
+        //向后台发送请求获取数据；
+        let params = { keywords: filename };
+        this.curd.getHotTitles(params)
+          .then(response => {
+            //成功执行内容
+            this.tableData = response.data;
+          })
       },
       //控制剪切框的显示和隐藏
       toggleShow() {
-        this.sizeForm.show = !this.sizeForm.show;
+        this.createForm.show = !this.createForm.show;
       },
       //剪切成功后的回调函数
       cropSuccess(imgDataUrl) {
         //  imgDataUrl其实就是图片的base64data码
-        this.avatar = imgDataUrl;
+        this.createForm.avatar = imgDataUrl;
         console.log(imgDataUrl)//这里打印出来的是base64格式的资源
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
-      handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-      },
-      beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
-      },
+
       handleClose(done) {
         this.$confirm('确认关闭？')
           .then(_ => {
@@ -275,13 +218,33 @@
         } else {
           this.options = [];
         }
+      },
+      onSubmit(){
+        this.curd.postArticle(this.createForm)
+          .then(response => {
+            this.tools.success(this, "文件添加成功");
+            this.fetchData({cate_id : this.createForm.cate_id});
+          })
+          .catch(err => {
+            this.tools.error(this, err.response.data);
+          });
       }
     },
-    mounted() {
-      this.list = this.states.map(item => {
-        return { value: `value:${item}`, label: `label:${item}` };
-      });
-    },
+
 
   };
 </script>
+
+<style>
+  .el-header {
+    color: #333;
+    border-bottom:2px solid #ccc;
+  }
+  .h-title{
+    height:60px;
+    line-height: 60px;
+    border-bottom: 1px solid #ccc;
+    font-size: 18px;
+    font-weight: bold;
+  }
+</style>
