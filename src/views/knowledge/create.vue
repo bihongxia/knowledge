@@ -48,7 +48,7 @@
           <el-form-item label="标题图片">
             <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
             <my-upload field="img" @crop-success="cropSuccess" v-model="show" :width="100" :height="100" img-format="jpg" :size="size"></my-upload>
-            <img :src="createForm.avatar">
+            <img :src="createForm._src">
           </el-form-item>
           <el-form-item label="权限设置">
             <el-button type="primary" plain @click="authDialog = true">权限</el-button>
@@ -109,7 +109,7 @@
   import attachUpload from '@/views/components/attachUpload';
   import { Tools } from "@/views/utils/Tools";
   import CURD from '@/minix/curd';
-  import { getList, getCateList, getLatelyAll, fileDelete, postArticle, getAuth } from "@/api/knowledge"
+  import { getList, getCateList, getLatelyAll, fileDelete, postArticle, getAuth, uploadFile } from "@/api/knowledge"
 
   export default {
     components: { Tinymce, myUpload, knowledgeBar, attachUpload },
@@ -144,6 +144,7 @@
           getAuth: getAuth || function () {},
           getList: getList || function () {},
           getLatelyAll: getLatelyAll || function () {},
+          uploadFile: uploadFile || function () {},
         },
         departments: [], //部门
         cates: [], //文档分类
@@ -159,7 +160,8 @@
           desc: '',
           content:'',
           fileList: [],
-          avatar: "",  //用于存储剪切完图片的base64Data和显示回调图片
+          avatar: '',
+          _src: "",  //用于存储剪切完图片的base64Data和显示回调图片
           permissions:{
             visit : '1',
             todo: '1',
@@ -233,7 +235,13 @@
       //剪切成功后的回调函数
       cropSuccess(imgDataUrl) {
         //  imgDataUrl其实就是图片的base64data码
-        this.createForm.avatar = imgDataUrl;
+        this.createForm._src = imgDataUrl;
+        let fd = new FormData();
+        fd.append('file',imgDataUrl);//传文件
+        this.curd.uploadFile(fd)
+          .then(response => {
+            this.createForm.avatar =  response.data.fid
+          })
         console.log(imgDataUrl)//这里打印出来的是base64格式的资源
       },
 
