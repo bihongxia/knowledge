@@ -121,7 +121,32 @@
     mixins: [CURD],
     //数据获取
     created() {
-        this.fetchData({cate_id : 0});
+      let type = this.$route.query.type ? this.$route.query.type : 1;
+      let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0;
+      let fid = this.$route.query.fid;
+      let keywords = this.$route.query.keywords;
+      //非最近浏览
+      if(type==1){
+        this.fetchData({cate_id : cate_id, fid: fid});
+        this.form.cate_id = cate_id;
+        //最近浏览
+      }else if (type==0){
+        this.curd.getLatelyAll().
+        then(res => {
+          this.tableData = res.data;
+        }).catch(err => {
+          this.tools.error(this, err.response.data);
+        })
+      }else if(type ==2) {
+        //向后台发送请求获取数据；
+        let params = { keywords: keywords };
+        this.curd.getHotTitles(params)
+          .then(response => {
+            //成功执行内容
+            this.tableData = response.data;
+          })
+      }
+        // this.fetchData({cate_id : 0});
     },
     data() {
       return {
@@ -148,6 +173,8 @@
           let type = this.$route.query.type ? this.$route.query.type : 1;
           let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0;
           let fid = this.$route.query.fid;
+          let keywords = this.$route.query.keywords;
+
           //非最近浏览
           if(type==1){
             this.fetchData({cate_id : cate_id, fid: fid});
@@ -160,6 +187,14 @@
             }).catch(err => {
               this.tools.error(this, err.response.data);
             })
+          }else if(type ==2) {
+            //向后台发送请求获取数据；
+            let params = { keywords: keywords };
+            this.curd.getHotTitles(params)
+              .then(response => {
+                //成功执行内容
+                this.tableData = response.data;
+              })
           }
         }
       }
