@@ -14,11 +14,11 @@
       <div class="right">
         <h4>文章附件  <i class="el-icon-link" size="mini" ></i></h4>
         <hr style="border:1px solid #f2f2f2">
-        <div v-for="item in article.file_list" style="margin-top: 30px">
-          <span style="margin-right:30px; display:inline-block;width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{item.real_name}}</span>
-          <span style="display: inline-block;margin-right: 30px;">{{item.size}}</span>
-          <a :href="item.path" :download="item.real_name" target="_blank" style="margin-right: 30px;"><i class="el-icon-download" size="mini" ></i></a>
-          <i class="el-icon-view" size="mini" ></i>
+        <div v-for="item in article.file_list" style="margin-top: 30px; font-size:15px;">
+          <span style="margin-right:20px; display:inline-block;width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; font-weight: bold;">{{item.real_name}}</span>
+          <span style="display: inline-block;margin-right: 20px; color: red; ">{{item.size}}</span>
+          <a :href="item.path" :download="item.real_name" target="_blank" style="margin-right: 20px;"><el-button icon="el-icon-download" size="mini" round type="primary"></el-button></a>
+          <el-button type="danger" class="el-icon-view" size="mini" round></el-button>
         </div>
       </div>
     </div>
@@ -28,11 +28,12 @@
 <script>
   import knowledgeBar from '@/views/components/knowledgeBar';
   import CURD from '@/minix/curd';
+  import pdf from 'vue-pdf';
   import { findArticle, download, getList, getLatelyAll, getHotTitles} from "@/api/knowledge";
   import { Tools } from "@/views/utils/Tools"
 
   export default {
-    components: { knowledgeBar },
+    components: { knowledgeBar, pdf },
     mixins: [CURD],
     //数据获取
     created() {
