@@ -59,22 +59,22 @@ export const constantRoutes = [
         name: 'Knowledge',
         component: () => import('@/views/knowledge/index'),
         meta: { title: '知识库列表', icon: 'dashboard' },
-        hidden:true
+        hidden: true
       },
       {
         path: 'knowledge/create',
         name: 'createDocument',
         component: () => import('@/views/knowledge/create'),
         meta: { title: '知识库新增', icon: 'dashboard' },
-        hidden:true
+        hidden: true
       },
       {
         path: 'knowledge/article/:id(\\d+)',
         name: 'article',
         component: () => import('@/views/knowledge/article'),
         meta: { title: '文章展示', icon: 'dashboard' },
-        hidden:true
-      },
+        hidden: true
+      }
     ]
   },
 
