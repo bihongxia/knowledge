@@ -126,13 +126,13 @@ export const constantRoutes = [
         name: 'Role',
         component: () => import('@/views/setting/role'),
         meta: { title: '角色管理', icon: 'tree' }
-      },
-      {
-        path: 'power',
-        name: 'Power',
-        component: () => import('@/views/setting/power'),
-        meta: { title: '权限管理', icon: 'tree' }
       }
+      // {
+      //   path: 'power',
+      //   name: 'Power',
+      //   component: () => import('@/views/setting/power'),
+      //   meta: { title: '权限管理', icon: 'tree' }
+      // }
     ]
   },
 
