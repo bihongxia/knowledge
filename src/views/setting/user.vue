@@ -52,29 +52,11 @@
           label="#"
           width="65"
         />
-        <!-- <el-table-column
-          align="center"
-          label="序号"
-          width="65"
-        >
-          <template slot-scope="scope">
-            {{ scope.$index+1+(listQuery.page-1)*listQuery.limit }}
-          </template>
-        </el-table-column>-->
         <el-table-column
           width="120"
           label="登录名"
         >
           <template slot-scope="scope">{{ scope.row.name }}</template>
-        </el-table-column>
-        <el-table-column
-          label="昵称"
-          width="120"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.nickname }}</span>
-          </template>
         </el-table-column>
         <el-table-column
           label="邮箱"
@@ -96,18 +78,6 @@
         >
           <template slot-scope="scope">
             <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status===1?'启用':'禁用' }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="注册时间"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <i
-              v-if="scope.row.createdAt"
-              class="el-icon-time"
-            />
-            {{ scope.row.createdAt }}
           </template>
         </el-table-column>
         <el-table-column

@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Admin Template' // page title
+const name = defaultSettings.title || '知识库' // page title
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -30,6 +30,7 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    disableHostCheck: true,
     port: port,
     open: true,
     overlay: {
@@ -37,12 +38,12 @@ module.exports = {
       errors: true
     },
     proxy: {
-      '/api': {
+      '/web': {
         target: process.env.VUE_APP_SERVER_HOST,
         changeOrigin: true
       }
-    },
-    before: require('./mock/mock-server.js')
+    }
+    // before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

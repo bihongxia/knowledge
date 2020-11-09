@@ -20,6 +20,7 @@
         <el-input
           ref="name"
           v-model="form.name"
+          placeholder="只允许添加英文字符和下划线"
         />
       </el-form-item>
       <el-form-item

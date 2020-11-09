@@ -1,148 +1,237 @@
 <template>
   <div class="app-container">
-      <el-card class="box-card">
-      <div class="text">
-        <el-form
-          :inline="true"
-          :model="formInline"
-          class="demo-form-inline"
-          size="mini"
-        >
-          <el-form-item label="用户名">
-            <el-input
-              v-model="formInline.user"
-              placeholder="用户名"
-            />
-          </el-form-item>
-          <el-form-item>
+    <el-card class="box-card">
+      <el-input v-model="filterText" placeholder="输入关键字进行过滤" />
+      <el-tree
+        ref="tree"
+        v-loading="loading"
+        class="filter-tree"
+        :data="treeData"
+        :props="defaultProps"
+        default-expand-all
+        :expand-on-click-node="false"
+        :filter-node-method="filterNode"
+        element-loading-background="rgba(255, 255, 255, 0.8)"
+        element-loading-text="加载中"
+      >
+        <span slot-scope="{ node, data }" class="custom-tree-node">
+          <span>{{ node.label }}</span>
+          <span>
+            <el-button
+              type="success"
+              size="mini"
+              round
+              plain
+              @click="() => append(data)"
+            >
+              添加部门
+            </el-button>
             <el-button
               type="primary"
-              @click="onSearch"
-            >查询</el-button>
-          </el-form-item>
-          <el-form-item>
+              size="mini"
+              round
+              plain
+              @click="assign(data)"
+            >
+              分配角色
+            </el-button>
             <el-button
-              type="primary"
-              @click="addUser"
-            >添加用户</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              @click="getList"
-            >刷新列表</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+              type="danger"
+              size="mini"
+              round
+              plain
+              disabled
+            >
+              删除
+            </el-button>
+          </span>
+        </span>
+      </el-tree>
     </el-card>
-    <el-card class="box-card">    
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      element-loading-text="Loading"
-      border
-      fit
-      highlight-current-row
+    <el-dialog
+      title="分配角色"
+      :visible.sync="dialogFormVisible"
     >
-      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-    </el-card>
+      <el-form :model="form">
+        <el-row :gutter="24">
+          <el-col :span="12">
+            <el-select v-model="value" placeholder="请选择角色">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="12">
+            <el-table
+              ref="multipleTable"
+              v-loading="listLoading"
+              :data="tableData"
+              border
+              tooltip-effect="dark"
+              style="width: 100%"
+              element-loading-text="获取部门成员"
+            >
+              <el-table-column
+                type="selection"
+                width="55"
+              />
+              <el-table-column
+                prop="name"
+                label="姓名"
+              />
+            </el-table>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
-
 <script>
-import { getList } from '@/api/table'
-import { Message } from 'element-ui'
-
+let id = 1000
+import { list, getUsers } from '@/api/department'
+import { getRolelist } from '@/api/role'
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
   data() {
     return {
-      list: null,
-      listLoading: true,
-      formInline: {
-        user: ''
-      }
+      filterText: '',
+      loading: false,
+      treeData: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      newName: '',
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      formLabelWidth: '120px',
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
+      tableData: [],
+      multipleSelection: [],
+      listLoading: false
+
     }
   },
-  created() {
-    this.fetchData()
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val)
+    }
+  },
+  mounted() {
+    this.getDepartment()
   },
   methods: {
-    fetchData() {
+    filterNode(value, data) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
+    },
+    getDepartment() {
+      this.loading = true
+      list({ params: 1 }).then((response) => {
+        this.treeData = response.data
+        this.loading = false
+      }).catch(() => {
+        console.log('添加失败')
+        this.loading = false
+      })
+    },
+    append(data) {
+      this.$prompt('请输入部门名称', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /[\u4e00-\u9fa5]/g,
+        inputErrorMessage: '部门名称不正确'
+      }).then(({ value }) => {
+        const newChild = { id: id++, name: value, children: [] }
+        if (!data.children) {
+          this.$set(data, 'children', [])
+        }
+        data.children.push(newChild)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入'
+        })
+      })
+    },
+    assign(data) {
+      this.dialogFormVisible = true
       this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
+      getUsers(data).then(response => {
+        this.listLoading = false
+        this.tableData = response.data
+      })
+    },
+    getRoles() {
+      getRolelist({ limit: 1000 }).then(response => {
+        this.list = response.data.data
+        this.total = response.data.total
         this.listLoading = false
       })
     },
-    onSearch() {
-      console.log(this.dialogFormVisible)
-    },
-    addUser() {
-      this.dialogFormVisible = true
-      this.editRow = null
-    },
-    // 编辑角色
-    edit(row) {
-      this.dialogFormVisible = true
-      this.editRow = row
-    },
-    delete(row) {
-      console.log(row)
+    Role(data) {
+      this.$prompt('选择角色', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /[\u4e00-\u9fa5]/g,
+        inputErrorMessage: '部门名称不正确'
+      }).then(({ value }) => {
+        const newChild = { id: id++, name: value, children: [] }
+        if (!data.children) {
+          this.$set(data, 'children', [])
+        }
+        data.children.push(newChild)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入'
+        })
+      })
     }
   }
 }
 </script>
-<style lang="scss" scoped>
-.el-form-item {
-  margin: 0;
-  padding: 0;
-}
-.el-table .warning-row {
-  background: oldlace;
-}
-
-.el-table .success-row {
-  background: #c0f0a7 !important;
-}
+<style scoped>
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
+  .el-button{
+    padding: 5px 12px ;
+  }
 </style>

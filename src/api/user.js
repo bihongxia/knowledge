@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: '/vue-admin-template/user/login',
+    url: '/user/login',
     method: 'post',
     data
   })
@@ -10,7 +10,7 @@ export function login(data) {
 
 export function wxLogin(data) {
   return request({
-    url: '/auth/login',
+    url: '/auth/wxlogin',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function wxLogin(data) {
 
 export function getInfo(token) {
   return request({
-    url: '/vue-admin-template/user/info',
+    url: '/user/info',
     method: 'get',
     params: { token }
   })
@@ -26,13 +26,13 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/vue-admin-template/user/logout',
+    url: '/auth/logout',
     method: 'post'
   })
 }
 export function getUserlist(data) {
   return request({
-    url: '/admin/user/list',
+    url: '/user/list',
     method: 'post',
     data
   })
@@ -46,7 +46,7 @@ export function edit(data) {
 }
 export function store(data) {
   return request({
-    url: '/admin/user/store',
+    url: '/user/store',
     method: 'post',
     data
   })
