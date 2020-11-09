@@ -16,7 +16,7 @@
         <hr style="border:1px solid #f2f2f2">
         <div v-for="item in article.file_list" style="margin-top: 30px">
           <span style="margin-right:30px; display:inline-block;width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{item.real_name}}</span>
-          <span style="display: inline-block;margin-right: 30px;">{{item.size}}M</span>
+          <span style="display: inline-block;margin-right: 30px;">{{item.size}}</span>
           <a :href="item.path" :download="item.real_name" target="_blank" style="margin-right: 30px;"><i class="el-icon-download" size="mini" ></i></a>
           <i class="el-icon-view" size="mini" ></i>
         </div>
@@ -131,17 +131,17 @@
   }
   .left{
     float: left;
-    width: 1000px;
+    width: 70%;
     height: 100%;
     padding:20px 30px;
     background-color: #f6f7f9;
+    border-right: 1px solid #d3dce6;
   }
   .right{
+    width:30%;
     padding:30px;
-    overflow:hidden;
-    border-radius: 30px;
+    float: left;
     background: #fff;
-    height:900px;
   }
   .container{
     width:100%;
