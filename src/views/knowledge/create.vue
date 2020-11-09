@@ -176,18 +176,38 @@
         states: []
       }
     },
+    watch: {
+      $route: {
+        handler(){
+          let type = this.$route.query.type ? this.$route.query.type : 1;
+          let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0;
+          let fid = this.$route.query.fid;
+          //非最近浏览
+          if(type==1){
+            this.fetchData({cate_id : cate_id, fid: fid});
+            this.form.cate_id = cate_id;
+            //最近浏览
+          }else if (type==0){
+            this.curd.getLatelyAll().
+            then(res => {
+              this.tableData = res.data;
+            }).catch(err => {
+              this.tools.error(this, err.response.data);
+            })
+          }
+        }
+      }
+    },
     methods:{
       getList(cate_id, fid) {
         this.$router.push({
-          name:'/knowledge',
+          path:'/knowledge',
           query: {
             cate_id: cate_id,
             fid: fid,
             type:1
           }
         })
-        this.fetchData({cate_id : cate_id, fid: fid});
-        this.form.cate_id = cate_id;
       },
       dirSearch(filename){
         //向后台发送请求获取数据；
@@ -200,17 +220,10 @@
       },
       getLatelyAll(){
         this.$router.push({
-          name:'/knowledge',
+          path:'/knowledge',
           query: {
             type:0
           }
-        })
-        this.curd.getLatelyAll().
-        then(res => {
-          let result = res.data;
-          this.tableData = result;
-        }).catch(err => {
-          this.tools.error(this, err.response.data);
         })
       },
       //控制剪切框的显示和隐藏
