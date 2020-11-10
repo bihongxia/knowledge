@@ -78,7 +78,7 @@
             <el-pagination
               background
               :current-page.sync="current_page"
-              :page-sizes="[10,20,25,50]"
+              :page-sizes="[50]"
               layout="sizes,prev, pager, next"
               :page-size.sync="pageSize"
               :total="total"
