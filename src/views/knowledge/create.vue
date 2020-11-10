@@ -1,6 +1,6 @@
 <template>
-  <el-container >
-    <knowledge-bar @getList="getList" @dirSearch="dirSearch" @getLatelyAll="getLatelyAll"></knowledge-bar>
+  <el-container>
+    <knowledge-bar @getList="getList" @dirSearch="dirSearch" @getLatelyAll="getLatelyAll" />
     <el-container>
       <el-header>
         <div class="h-title">新增文档</div>
@@ -8,12 +8,12 @@
       <el-main>
         <el-form ref="form" :model="createForm" label-width="80px">
           <el-form-item label="主题">
-            <el-input v-model="createForm.title"></el-input>
+            <el-input v-model="createForm.title" />
           </el-form-item>
           <el-row>
             <el-col :span="5">
               <el-form-item label="作者">
-                <el-input v-model="createForm.create_user"></el-input>
+                <el-input v-model="createForm.create_user" />
               </el-form-item>
             </el-col>
             <el-col :span="8" :offset="2">
@@ -22,8 +22,8 @@
                   v-model="createForm.created_at"
                   type="datetime"
                   placeholder="发布时间"
-                  default-time="12:00:00">
-                </el-date-picker>
+                  default-time="12:00:00"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="6">
@@ -34,20 +34,19 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
-          </el-row>
+          <el-row />
           <el-form-item label="内容简要">
-            <el-input type="textarea" v-model="createForm.desc"></el-input>
+            <el-input v-model="createForm.desc" type="textarea" />
             <div>
               <tinymce v-model="createForm.content" :height="300" />
             </div>
           </el-form-item>
           <el-form-item label="文档附件">
-            <attach-upload :fileList="createForm.fileList"></attach-upload>
+            <attach-upload :file-list="createForm.fileList" />
           </el-form-item>
           <el-form-item label="标题图片">
-            <el-button type="primary" icon="el-icon-upload"  @click="toggleShow" size="small">请上传标题图片</el-button>
-            <my-upload field="img" @crop-success="cropSuccess" v-model="show" :width="100" :height="100" img-format="jpg" :size="size"></my-upload>
+            <el-button type="primary" icon="el-icon-upload" size="small" @click="toggleShow">请上传标题图片</el-button>
+            <my-upload v-model="show" field="img" :width="100" :height="100" img-format="jpg" :size="size" @crop-success="cropSuccess" />
             <img :src="createForm._src">
           </el-form-item>
           <el-form-item label="权限设置">
@@ -58,7 +57,8 @@
             title="提示"
             :visible.sync="authDialog"
             width="30%"
-            :before-close="handleClose">
+            :before-close="handleClose"
+          >
             <el-form-item label="访问权限">
               <el-radio v-model="createForm.permissions.visit" label="1" border size="medium">共享</el-radio>
               <el-radio v-model="createForm.permissions.visit" label="2" border size="medium">私密</el-radio>
@@ -72,13 +72,14 @@
                   reserve-keyword
                   placeholder="请输入允许访问的人员名字"
                   :remote-method="remoteMethod"
-                  :loading="loading">
+                  :loading="loading"
+                >
                   <el-option
                     v-for="item in options"
                     :key="item.value"
                     :label="item.label"
-                    :value="item.value">
-                  </el-option>
+                    :value="item.value"
+                  />
                 </el-select>
               </div>
             </el-form-item>
@@ -102,24 +103,157 @@
 </template>
 
 <script>
-  import Tinymce from '@/components/Tinymce';
-  import 'babel-polyfill';
-  import myUpload from 'vue-image-crop-upload';
-  import knowledgeBar from '@/views/components/knowledgeBar';
-  import attachUpload from '@/views/components/attachUpload';
-  import { Tools } from "@/views/utils/Tools";
-  import CURD from '@/minix/curd';
-  import { getList, getCateList, getLatelyAll, fileDelete, postArticle, getAuth, uploadFile, getHotTitles } from "@/api/knowledge"
+import Tinymce from '@/components/Tinymce'
+import 'babel-polyfill'
+import myUpload from 'vue-image-crop-upload'
+import knowledgeBar from '@/views/components/knowledgeBar'
+import attachUpload from '@/views/components/attachUpload'
+import { Tools } from '@/views/utils/Tools'
+import CURD from '@/minix/curd'
+import { getList, getCateList, getLatelyAll, fileDelete, postArticle, getAuth, uploadFile, getHotTitles } from '@/api/knowledge'
 
-  export default {
-    components: { Tinymce, myUpload, knowledgeBar, attachUpload },
-    //数据获取
-    created() {
-      //获取分类
-      this.curd.getCateList()
+export default {
+  components: { Tinymce, myUpload, knowledgeBar, attachUpload },
+  data() {
+    return {
+      tools: Tools,
+      mixins: [CURD],
+      curd: {
+        getCateList: getCateList || function() {},
+        fileDelete: fileDelete || function() {},
+        postArticle: postArticle || function() {},
+        getAuth: getAuth || function() {},
+        getList: getList || function() {},
+        getLatelyAll: getLatelyAll || function() {},
+        uploadFile: uploadFile || function() {},
+        getHotTitles: getHotTitles || function() {}
+      },
+      departments: [], // 部门
+      cates: [], // 文档分类
+      tableData: [],
+      search: '',
+      // 上传附件相关
+      createForm: {
+        type: 2,
+        title: '',
+        create_user: '',
+        created_at: '',
+        cate_id: '',
+        desc: '',
+        content: '',
+        fileList: [],
+        avatar: '',
+        _src: '', // 用于存储剪切完图片的base64Data和显示回调图片
+        permissions: {
+          visit: '1',
+          todo: '1',
+          names: ''
+        }
+      },
+      authDialog: false,
+      options: [],
+      value: [],
+      list: [],
+      loading: false,
+      size: '',
+      show: false, // 剪切框显示和隐藏的flag
+      states: []
+    }
+  },
+  // 数据获取
+  created() {
+    // 获取分类
+    this.curd.getCateList()
+      .then(response => {
+        this.cates = response.data
+      })
+    this.curd.getAuth()
+      .then(response => {
+        const states = []
+        const list = []
+        for (const i in response.data) {
+          const item = response.data[i].userid
+          states[i] = response.data[i].userid
+          list[i] = { value: `value:${item}`, label: `name:${item}` }
+        }
+        this.states = states
+        this.list = list
+      })
+  },
+  // watch: {
+  //   $route: {
+  //     handler(){
+  //       let type = this.$route.query.type ? this.$route.query.type : 1;
+  //       let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0;
+  //       let fid = this.$route.query.fid;
+  //       let keywords = this.$route.query.keywords;
+  //       //非最近浏览
+  //       if(type==1){
+  //         this.fetchData({cate_id : cate_id, fid: fid});
+  //         this.form.cate_id = cate_id;
+  //         //最近浏览
+  //       }else if (type==0){
+  //         this.curd.getLatelyAll().
+  //         then(res => {
+  //           this.tableData = res.data;
+  //         }).catch(err => {
+  //           this.tools.error(this, err.response.data);
+  //         })
+  //       }else if(type ==2) {
+  //         //向后台发送请求获取数据；
+  //         let params = { keywords: keywords };
+  //         this.curd.getHotTitles(params)
+  //           .then(response => {
+  //             //成功执行内容
+  //             this.tableData = response.data;
+  //           })
+  //       }
+  //     }
+  //   }
+  // },
+  methods: {
+    getList(cate_id, fid) {
+      this.$router.push({
+        path: '/knowledge',
+        query: {
+          cate_id: cate_id,
+          fid: fid,
+          type: 1
+        }
+      })
+    },
+    dirSearch(filename) {
+      this.$router.push({
+        path: '/knowledge',
+        query: {
+          keywords: filename,
+          type: 2
+        }
+      })
+    },
+    getLatelyAll() {
+      this.$router.push({
+        path: '/knowledge',
+        query: {
+          type: 0
+        }
+      })
+    },
+    // 控制剪切框的显示和隐藏
+    toggleShow() {
+      this.show = !this.show
+    },
+    // 剪切成功后的回调函数
+    cropSuccess(imgDataUrl) {
+      //  imgDataUrl其实就是图片的base64data码
+      this.createForm._src = imgDataUrl
+      const fd = new FormData()
+      fd.append('file', imgDataUrl)// 传文件
+      this.curd.uploadFile(fd)
         .then(response => {
-          this.cates = response.data;
+          this.createForm.avatar = response.data.fid
         })
+<<<<<<< HEAD
         this.curd.getAuth()
         .then(response => {
           let states = [];
@@ -199,15 +333,42 @@
             keywords: filename,
             type:2
           }
+=======
+      console.log(imgDataUrl)// 这里打印出来的是base64格式的资源
+    },
+
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
         })
-      },
-      getLatelyAll(){
-        this.$router.push({
-          path:'/knowledge',
-          query: {
-            type:0
-          }
+        .catch(_ => {})
+    },
+    remoteMethod(query) {
+      if (query !== '') {
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+          this.options = this.list.filter(item => {
+            return item.label.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        }, 200)
+      } else {
+        this.options = []
+      }
+    },
+    onSubmit() {
+      this.curd.postArticle(this.createForm)
+        .then(response => {
+          this.tools.success(this, '文件添加成功')
+          this.fetchData({ cate_id: this.createForm.cate_id })
+>>>>>>> 6e4e7fae0376bf0f6db872a261cd5c300b986f6f
         })
+        .catch(err => {
+          this.tools.error(this, err.response.data)
+        })
+<<<<<<< HEAD
       },
       //控制剪切框的显示和隐藏
       toggleShow() {
@@ -259,8 +420,12 @@
       }
     },
 
+=======
+    }
+  }
+>>>>>>> 6e4e7fae0376bf0f6db872a261cd5c300b986f6f
 
-  };
+}
 </script>
 
 <style>

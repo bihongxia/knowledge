@@ -29,7 +29,7 @@ export function getHotTitles(params = {}) {
   })
 }
 
-//创建文件夹
+// 创建文件夹
 export function postFile(data) {
   return request({
     url: '/article/create',
@@ -38,7 +38,7 @@ export function postFile(data) {
   })
 }
 
-//创建文章
+// 创建文章
 export function postArticle(data) {
   return request({
     url: '/article/create',
@@ -50,11 +50,11 @@ export function postArticle(data) {
 export function getCateAndDepat(params = {}) {
   return request({
     url: '/dir/search',
-    method: 'get',
+    method: 'get'
   })
 }
 
-//审核
+// 审核
 export function checkArticle(data = {}) {
   return request({
     url: '/article/approval',
@@ -63,7 +63,7 @@ export function checkArticle(data = {}) {
   })
 }
 
-//上传附件
+// 上传附件
 export function uploadFile(data) {
   return request({
     url: '/dir/upload/',
@@ -75,16 +75,16 @@ export function uploadFile(data) {
   })
 }
 
-//删除附件
+// 删除附件
 export function fileDelete(params = {}) {
   return request({
     url: '/dir/check',
-    method: 'get',
+    method: 'get'
   })
 }
 
-//展示文章
-export function findArticle( params = {}) {
+// 展示文章
+export function findArticle(params = {}) {
   return request({
     url: '/article/detail',
     method: 'get',
@@ -95,11 +95,11 @@ export function findArticle( params = {}) {
 export function getAuth(params = {}) {
   return request({
     url: '/auth/all',
-    method: 'get',
+    method: 'get'
   })
 }
 
-//下载
+// 下载
 export function download(params = {}) {
   return request({
     url: '/article/download',
@@ -108,98 +108,94 @@ export function download(params = {}) {
   })
 }
 
-//获取最近浏览
-export function getLatelyAll(){
+// 获取最近浏览
+export function getLatelyAll() {
   return request({
     url: '/lately/all',
-    method: 'post',
+    method: 'post'
   })
 }
-
 
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return request({
     url: baseUrl,
     method: 'get',
     params: {
-        page: page,
-        pageSize: pageSize,
-        order_number: searchObj.order_number,
-        merchant_number: searchObj.merchant_number,
-        merchant_name: searchObj.merchant_name,
-        status: searchObj.status,
+      page: page,
+      pageSize: pageSize,
+      order_number: searchObj.order_number,
+      merchant_number: searchObj.merchant_number,
+      merchant_name: searchObj.merchant_name,
+      status: searchObj.status
     }
   })
 }
 
-export function getInfoById (id) {
+export function getInfoById(id) {
   return request({
     url: baseUrl + '/' + id,
-    method: 'get',
+    method: 'get'
   })
 }
 
-
-export function updateInfo (id, data) {
-
-    if (typeof data.order_time === 'string') {
-      data.order_time = Math.ceil(Date.parse(data.order_time)/1000)
-    } else {
-      data.order_time =Math.ceil(((data.order_time).getTime())/1000)
-    }
-    return request({
-      url: baseUrl +'/' + id,
-      method: 'PATCH',
-      data,
-    })
-}
-
-export function deleteInfoById (id) {
+export function updateInfo(id, data) {
+  if (typeof data.order_time === 'string') {
+    data.order_time = Math.ceil(Date.parse(data.order_time) / 1000)
+  } else {
+    data.order_time = Math.ceil(((data.order_time).getTime()) / 1000)
+  }
   return request({
-    url: baseUrl +'/' + id,
-    method: 'delete',
+    url: baseUrl + '/' + id,
+    method: 'PATCH',
+    data
   })
 }
 
-export function addInfo (data) {
-  data.order_time =Math.ceil(((data.order_time).getTime())/1000)
+export function deleteInfoById(id) {
+  return request({
+    url: baseUrl + '/' + id,
+    method: 'delete'
+  })
+}
+
+export function addInfo(data) {
+  data.order_time = Math.ceil(((data.order_time).getTime()) / 1000)
   return request({
     url: baseUrl,
     method: 'post',
-    data,
+    data
   })
 }
 
-export function deleteAll( params) {
+export function deleteAll(params) {
   return request({
-     url: baseUrl + '/deleteAll',
-     method: 'post',
-     data: {
-       ids: params
-     }
+    url: baseUrl + '/deleteAll',
+    method: 'post',
+    data: {
+      ids: params
+    }
   })
 }
-
 
 // 获取订单对应的产品信息
 
-export function getProductsById (id) {
+export function getProductsById(id) {
   return request({
     url: baseUrl + '/' + id + '/products',
-    method: 'get',
+    method: 'get'
   })
 }
 
-export function getEnableProductsById (id) {
+export function getEnableProductsById(id) {
   return request({
     url: baseUrl + '/' + id + '/enable',
-    method: 'get',
+    method: 'get'
   })
 }
 
-export function getSummaryById (id) {
+export function getSummaryById(id) {
   return request({
     url: baseUrl + '/' + id + '/summary',
-    method: 'get',
+    method: 'get'
   })
 }
