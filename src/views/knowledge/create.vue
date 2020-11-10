@@ -16,7 +16,7 @@
                 <el-input v-model="createForm.create_user"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="5" :offset="2">
+            <el-col :span="8" :offset="2">
               <el-form-item label="选择时间">
                 <el-date-picker
                   v-model="createForm.created_at"
@@ -26,9 +26,9 @@
                 </el-date-picker>
               </el-form-item>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="6">
               <el-form-item label="文档分类">
-                <el-select v-model="createForm.cate_id" placeholder="请选择文档分类">
+                <el-select v-model="createForm.cate_id" placeholder="请选择文档分类" :disabled="this.$route.query.cate_id!=0">
                   <el-option v-for="cate in cates" :label="cate.name" :value="cate.id" :key="cate.id"></el-option>
                 </el-select>
               </el-form-item>
@@ -120,7 +120,7 @@
         .then(response => {
           this.cates = response.data;
         })
-      this.curd.getAuth()
+        this.curd.getAuth()
         .then(response => {
           let states = [];
           let list = [];
@@ -132,6 +132,7 @@
           this.states = states;
           this.list = list;
         })
+      console.log(this.createForm.cate_id);
     },
     data() {
       return {
@@ -157,7 +158,8 @@
           title:'',
           create_user: '',
           created_at: '',
-          cate_id:'',
+          cate_id: this.$route.query.cate_id != 0 ? Number(this.$route.query.cate_id) : '',
+          pid: this.$route.query.aid,
           desc: '',
           content:'',
           fileList: [],
@@ -168,7 +170,6 @@
             todo: '1',
             names: ''
           },
-          pid: this.$route.query.aid
         },
         authDialog: false,
         options: [],

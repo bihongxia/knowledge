@@ -20,7 +20,7 @@
               <div class="char-margin light-color" style="font-size: 14px;">我的文件</div>
             </el-col>
             <el-col :span="3">
-              <el-dropdown trigger="click">
+              <el-dropdown trigger="click" v-if="type != 0">
                 <el-button size="small " type="primary" class="el-dropdown-link btn-margin">新建</el-button>
                 <el-dropdown-menu slot="dropdown" >
                   <div @click="createFolder()"><el-dropdown-item><i class="el-icon-folder"></i>新建文件夹</el-dropdown-item></div>
@@ -34,7 +34,7 @@
         <el-table :data="tableData" v-loading="loading">
           <el-table-column label="名称">
             <template slot-scope="scope">
-              <div  style="cursor: pointer" v-if="scope.row.is_dir==1" @click="getList(scope.row.category_id,scope.row.id)">
+              <div  style="cursor: pointer" v-if="scope.row.is_dir==1" @click="getList(cate_id, scope.row.id)">
                 <i class="el-icon-folder"></i>
                 <span style="margin-left: 10px;">{{ scope.row.title }}</span>
               </div>
@@ -122,9 +122,10 @@
     //数据获取
     created() {
       let type = this.$route.query.type ? this.$route.query.type : 1;
-      let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0;
-      let fid = this.$route.query.fid;
-      let keywords = this.$route.query.keywords;
+      let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0; //文档分类
+      let fid = this.$route.query.fid; //文件id
+      let keywords = this.$route.query.keywords; //搜索关键字
+      this.cate_id = cate_id
       //非最近浏览
       if(type==1){
         this.fetchData({cate_id : cate_id, fid: fid});
@@ -137,6 +138,7 @@
         }).catch(err => {
           this.tools.error(this, err.response.data);
         })
+        //搜索热词展示列表
       }else if(type ==2) {
         //向后台发送请求获取数据；
         let params = { keywords: keywords };
@@ -146,7 +148,6 @@
             this.tableData = response.data;
           })
       }
-        // this.fetchData({cate_id : 0});
     },
     data() {
       return {
@@ -159,7 +160,9 @@
           checkArticle: checkArticle || function () {},
           getLatelyAll: getLatelyAll || function () {},
         },
+        cate_id: 0,
         tools: Tools,
+        type: this.$route.query.type,
         form: {
           type : 1,
           cate_id : 0,
@@ -174,7 +177,8 @@
           let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0;
           let fid = this.$route.query.fid;
           let keywords = this.$route.query.keywords;
-
+          this.cate_id = cate_id
+          this.type = this.$route.query.type;
           //非最近浏览
           if(type==1){
             this.fetchData({cate_id : cate_id, fid: fid});
@@ -253,13 +257,13 @@
           });
       },
       createDoc(){
-        //this.$router.replace('/knowledge/create');
         this.$router.push({
-          path:'/knowledge/create',
+          path: '/knowledge/create',
           query: {
-            aid: this.$route.query.fid
+            aid: this.$route.query.fid,
+            cate_id: this.$route.query.cate_id,
           }
-        })
+        });
       },
       //复核
       check(id) {
