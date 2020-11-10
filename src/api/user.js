@@ -75,3 +75,16 @@ export function qqAuth(data) {
     data
   })
 }
+
+// 上传附件
+export function uploadImage(data) {
+  return request({
+      url: '/auth/face_add',
+    method: 'post',
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
