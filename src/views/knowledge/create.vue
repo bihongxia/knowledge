@@ -28,7 +28,7 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="文档分类">
-                <el-select v-model="createForm.cate_id" placeholder="请选择文档分类" :disabled="this.$route.query.cate_id!=0">
+                <el-select v-model="createForm.cate_id" placeholder="请选择文档分类" :disabled="this.$route.query.cate_id>0">
                   <el-option v-for="cate in cates" :label="cate.name" :value="cate.id" :key="cate.id"></el-option>
                 </el-select>
               </el-form-item>
@@ -138,7 +138,7 @@ export default {
         title:'',
         create_user: '',
         created_at: '',
-        cate_id: this.$route.query.cate_id != 0 ? Number(this.$route.query.cate_id) : '',
+        cate_id: this.$route.query.cate_id > 0 ? Number(this.$route.query.cate_id) : '',
         pid: this.$route.query.aid,
         desc: '',
         content:'',
