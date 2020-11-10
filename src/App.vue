@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view />
+    <el-scrollbar style="height:100%;">
+      <router-view />
+    </el-scrollbar>
   </div>
 </template>
 
