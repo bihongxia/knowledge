@@ -118,37 +118,38 @@ export default {
     return {
       tools: Tools,
       mixins: [CURD],
-      curd: {
-        getCateList: getCateList || function() {},
-        fileDelete: fileDelete || function() {},
-        postArticle: postArticle || function() {},
-        getAuth: getAuth || function() {},
-        getList: getList || function() {},
-        getLatelyAll: getLatelyAll || function() {},
-        uploadFile: uploadFile || function() {},
-        getHotTitles: getHotTitles || function() {}
+      curd:{
+        getCateList: getCateList || function () {},
+        fileDelete: fileDelete || function () {},
+        postArticle: postArticle || function () {},
+        getAuth: getAuth || function () {},
+        getList: getList || function () {},
+        getLatelyAll: getLatelyAll || function () {},
+        uploadFile: uploadFile || function () {},
+        getHotTitles: getHotTitles || function () {},
       },
-      departments: [], // 部门
-      cates: [], // 文档分类
+      departments: [], //部门
+      cates: [], //文档分类
       tableData: [],
       search: '',
-      // 上传附件相关
+      //上传附件相关
       createForm: {
         type: 2,
-        title: '',
+        title:'',
         create_user: '',
         created_at: '',
-        cate_id: '',
+        cate_id: this.$route.query.cate_id != 0 ? Number(this.$route.query.cate_id) : '',
+        pid: this.$route.query.aid,
         desc: '',
-        content: '',
+        content:'',
         fileList: [],
         avatar: '',
-        _src: '', // 用于存储剪切完图片的base64Data和显示回调图片
-        permissions: {
-          visit: '1',
+        _src: "",  //用于存储剪切完图片的base64Data和显示回调图片
+        permissions:{
+          visit : '1',
           todo: '1',
           names: ''
-        }
+        },
       },
       authDialog: false,
       options: [],
@@ -156,7 +157,7 @@ export default {
       list: [],
       loading: false,
       size: '',
-      show: false, // 剪切框显示和隐藏的flag
+      show: false,  //剪切框显示和隐藏的flag
       states: []
     }
   },
@@ -180,37 +181,6 @@ export default {
         this.list = list
       })
   },
-  // watch: {
-  //   $route: {
-  //     handler(){
-  //       let type = this.$route.query.type ? this.$route.query.type : 1;
-  //       let cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0;
-  //       let fid = this.$route.query.fid;
-  //       let keywords = this.$route.query.keywords;
-  //       //非最近浏览
-  //       if(type==1){
-  //         this.fetchData({cate_id : cate_id, fid: fid});
-  //         this.form.cate_id = cate_id;
-  //         //最近浏览
-  //       }else if (type==0){
-  //         this.curd.getLatelyAll().
-  //         then(res => {
-  //           this.tableData = res.data;
-  //         }).catch(err => {
-  //           this.tools.error(this, err.response.data);
-  //         })
-  //       }else if(type ==2) {
-  //         //向后台发送请求获取数据；
-  //         let params = { keywords: keywords };
-  //         this.curd.getHotTitles(params)
-  //           .then(response => {
-  //             //成功执行内容
-  //             this.tableData = response.data;
-  //           })
-  //       }
-  //     }
-  //   }
-  // },
   methods: {
     getList(cate_id, fid) {
       this.$router.push({
@@ -246,97 +216,14 @@ export default {
     // 剪切成功后的回调函数
     cropSuccess(imgDataUrl) {
       //  imgDataUrl其实就是图片的base64data码
-      this.createForm._src = imgDataUrl
-      const fd = new FormData()
-      fd.append('file', imgDataUrl)// 传文件
+      this.createForm._src = imgDataUrl;
+      let fd = new FormData();
+      fd.append('file',imgDataUrl);//传文件
       this.curd.uploadFile(fd)
         .then(response => {
-          this.createForm.avatar = response.data.fid
-        })
-<<<<<<< HEAD
-        this.curd.getAuth()
-        .then(response => {
-          let states = [];
-          let list = [];
-          for(let i in response.data){
-            let item = response.data[i].userid;
-            states[i] = response.data[i].userid;
-            list[i] = {value: `value:${item}`, label: `name:${item}`}
-          }
-          this.states = states;
-          this.list = list;
-        })
-      console.log(this.createForm.cate_id);
-    },
-    data() {
-      return {
-        tools: Tools,
-        mixins: [CURD],
-        curd:{
-          getCateList: getCateList || function () {},
-          fileDelete: fileDelete || function () {},
-          postArticle: postArticle || function () {},
-          getAuth: getAuth || function () {},
-          getList: getList || function () {},
-          getLatelyAll: getLatelyAll || function () {},
-          uploadFile: uploadFile || function () {},
-          getHotTitles: getHotTitles || function () {},
-        },
-        departments: [], //部门
-        cates: [], //文档分类
-        tableData: [],
-        search: '',
-        //上传附件相关
-        createForm: {
-          type: 2,
-          title:'',
-          create_user: '',
-          created_at: '',
-          cate_id: this.$route.query.cate_id != 0 ? Number(this.$route.query.cate_id) : '',
-          pid: this.$route.query.aid,
-          desc: '',
-          content:'',
-          fileList: [],
-          avatar: '',
-          _src: "",  //用于存储剪切完图片的base64Data和显示回调图片
-          permissions:{
-            visit : '1',
-            todo: '1',
-            names: ''
-          },
-        },
-        authDialog: false,
-        options: [],
-        value: [],
-        list: [],
-        loading: false,
-        size: '',
-        show: false,  //剪切框显示和隐藏的flag
-        states: []
-      }
-    },
-    methods:{
-      getList(cate_id, fid) {
-        this.$router.push({
-          path:'/knowledge',
-          query: {
-            cate_id: cate_id,
-            fid: fid,
-            type:1
-          }
+          this.createForm.avatar =  response.data.fid
         })
       },
-      dirSearch(filename){
-        this.$router.push({
-          path:'/knowledge',
-          query: {
-            keywords: filename,
-            type:2
-          }
-=======
-      console.log(imgDataUrl)// 这里打印出来的是base64格式的资源
-    },
-
     handleClose(done) {
       this.$confirm('确认关闭？')
         .then(_ => {
@@ -358,73 +245,17 @@ export default {
         this.options = []
       }
     },
-    onSubmit() {
+    onSubmit(){
       this.curd.postArticle(this.createForm)
         .then(response => {
-          this.tools.success(this, '文件添加成功')
-          this.fetchData({ cate_id: this.createForm.cate_id })
->>>>>>> 6e4e7fae0376bf0f6db872a261cd5c300b986f6f
+          this.tools.success(this, "文件添加成功");
+          this.$router.back();
         })
         .catch(err => {
-          this.tools.error(this, err.response.data)
-        })
-<<<<<<< HEAD
-      },
-      //控制剪切框的显示和隐藏
-      toggleShow() {
-        this.show = !this.show;
-      },
-      //剪切成功后的回调函数
-      cropSuccess(imgDataUrl) {
-        //  imgDataUrl其实就是图片的base64data码
-        this.createForm._src = imgDataUrl;
-        let fd = new FormData();
-        fd.append('file',imgDataUrl);//传文件
-        this.curd.uploadFile(fd)
-          .then(response => {
-            this.createForm.avatar =  response.data.fid
-          })
-        console.log(imgDataUrl)//这里打印出来的是base64格式的资源
-      },
-
-      handleClose(done) {
-        this.$confirm('确认关闭？')
-          .then(_ => {
-            done();
-          })
-          .catch(_ => {});
-      },
-      remoteMethod(query) {
-        if (query !== '') {
-          this.loading = true;
-          setTimeout(() => {
-            this.loading = false;
-            this.options = this.list.filter(item => {
-              return item.label.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1;
-            });
-          }, 200);
-        } else {
-          this.options = [];
-        }
-      },
-      onSubmit(){
-        this.curd.postArticle(this.createForm)
-          .then(response => {
-            this.tools.success(this, "文件添加成功");
-            this.$router.back();
-          })
-          .catch(err => {
-            this.tools.error(this, err.response.data);
-          });
-      }
+          this.tools.error(this, err.response.data);
+        });
     },
-
-=======
-    }
   }
->>>>>>> 6e4e7fae0376bf0f6db872a261cd5c300b986f6f
-
 }
 </script>
 

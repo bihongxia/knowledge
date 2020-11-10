@@ -114,7 +114,6 @@ import CURD from '@/minix/curd'
 import { getList, getHotTitles, postFile, checkArticle, getLatelyAll } from '@/api/knowledge'
 import { Tools } from '@/views/utils/Tools'
 
-<<<<<<< HEAD
   export default {
     name: 'knowledge_index',
     components: { knowledgeBar },
@@ -188,48 +187,6 @@ import { Tools } from '@/views/utils/Tools'
             this.curd.getLatelyAll().
             then(res => {
               this.tableData = res.data;
-=======
-export default {
-  name: 'KnowledgeIndex',
-  components: { knowledgeBar },
-  mixins: [CURD],
-  data() {
-    return {
-      tableData: [],
-      createDialogVisible: false,
-      curd: {
-        getList: getList || function() {},
-        getHotTitles: getHotTitles || function() {},
-        addFile: postFile || function() {},
-        checkArticle: checkArticle || function() {},
-        getLatelyAll: getLatelyAll || function() {}
-      },
-      tools: Tools,
-      form: {
-        type: 1,
-        cate_id: 0,
-        name: ''
-      }
-    }
-  },
-  watch: {
-    $route: {
-      handler() {
-        const type = this.$route.query.type ? this.$route.query.type : 1
-        const cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0
-        const fid = this.$route.query.fid
-        const keywords = this.$route.query.keywords
-
-        // 非最近浏览
-        if (type == 1) {
-          this.fetchData({ cate_id: cate_id, fid: fid })
-          this.form.cate_id = cate_id
-          // 最近浏览
-        } else if (type == 0) {
-          this.curd.getLatelyAll()
-            .then(res => {
-              this.tableData = res.data
->>>>>>> 6e4e7fae0376bf0f6db872a261cd5c300b986f6f
             }).catch(err => {
               this.tools.error(this, err.response.data)
             })
@@ -244,35 +201,6 @@ export default {
         }
       }
     }
-  },
-  // 数据获取
-  created() {
-    const type = this.$route.query.type ? this.$route.query.type : 1
-    const cate_id = this.$route.query.cate_id ? this.$route.query.cate_id : 0
-    const fid = this.$route.query.fid
-    const keywords = this.$route.query.keywords
-    // 非最近浏览
-    if (type == 1) {
-      this.fetchData({ cate_id: cate_id, fid: fid })
-      this.form.cate_id = cate_id
-      // 最近浏览
-    } else if (type == 0) {
-      this.curd.getLatelyAll()
-        .then(res => {
-          this.tableData = res.data
-        }).catch(err => {
-          this.tools.error(this, err.response.data)
-        })
-    } else if (type == 2) {
-      // 向后台发送请求获取数据；
-      const params = { keywords: keywords }
-      this.curd.getHotTitles(params)
-        .then(response => {
-          // 成功执行内容
-          this.tableData = response.data
-        })
-    }
-    // this.fetchData({cate_id : 0});
   },
   methods: {
     getList(cate_id, fid) {
@@ -312,62 +240,35 @@ export default {
     cancel() {
       this.createDialogVisible = false
     },
-
-<<<<<<< HEAD
-      createFolder(){
-        this.createDialogVisible = true;
-      },
-      saveFile(){
-        this.createDialogVisible = false;
-        this.curd.addFile(this.form)
-          .then(response => {
-            this.tools.success(this, "文件夹添加成功");
-            this.fetchData({cate_id : this.form.cate_id});
-          })
-          .catch(err => {
-            this.tools.error(this, err.response.data);
-          });
-      },
-      createDoc(){
-        this.$router.push({
-          path: '/knowledge/create',
-          query: {
-            aid: this.$route.query.fid,
-            cate_id: this.$route.query.cate_id,
-          }
-        });
-      },
-      //复核
-      check(id) {
-        this.curd.checkArticle({'id': id})
-          .then(response => {
-            this.tools.success(this, "复核成功");
-            this.fetchData({cate_id : this.form.cate_id});
-=======
-    createFolder() {
-      this.createDialogVisible = true
+    createFolder(){
+      this.createDialogVisible = true;
     },
-    saveFile() {
-      this.createDialogVisible = false
+    saveFile(){
+      this.createDialogVisible = false;
       this.curd.addFile(this.form)
         .then(response => {
-          this.tools.success(this, '文件夹添加成功')
-          this.fetchData({ cate_id: this.form.cate_id })
+          this.tools.success(this, "文件夹添加成功");
+          this.fetchData({cate_id : this.form.cate_id});
         })
         .catch(err => {
-          this.tools.error(this, err.response.data)
-        })
+          this.tools.error(this, err.response.data);
+        });
     },
-    createDoc() {
-      this.$router.replace('/knowledge/create')
+    createDoc(){
+      this.$router.push({
+        path: '/knowledge/create',
+        query: {
+          aid: this.$route.query.fid,
+          cate_id: this.$route.query.cate_id,
+        }
+      });
     },
-    // 复核
+    //复核
     check(id) {
-      this.curd.checkArticle({ 'id': id })
+      this.curd.checkArticle({'id': id})
         .then(response => {
-          this.tools.success(this, '复核成功')
-          this.fetchData({ cate_id: this.form.cate_id })
->>>>>>> 6e4e7fae0376bf0f6db872a261cd5c300b986f6f
+          this.tools.success(this, "复核成功");
+          this.fetchData({cate_id : this.form.cate_id});
         })
     }
   }
